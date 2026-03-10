@@ -1,331 +1,214 @@
 /* ================================================
    AmFra – Landing Page
-   main.js
+   js/main.js
 
-   Módulos incluidos:
-   1. Sistema de detección de sección visible (IntersectionObserver)
-   2. Activación de animaciones al hacer scroll
-   3. Navegación lateral (puntos)
-   4. Scroll suave al hacer clic en los puntos de nav
-   5. Sistema de partículas (Canvas API)
-   6. Partículas globales (todo el sitio)
-   7. Partículas por sección (efecto específico)
+   Módulos:
+   1. IntersectionObserver — animaciones al hacer scroll
+   2. Navegación lateral — puntos sincronizados con scroll
+   3. Partículas hero — 140 partículas multicolores
+   4. Partículas por sección — color según categoría
+   5. Scroll suave en links de ancla
+   6. Modal de pedido — contador de unidades + WhatsApp
 ================================================ */
 
-/* ==============================================
-   Esperamos a que el HTML esté completamente
-   cargado antes de ejecutar cualquier JS
-============================================== */
 document.addEventListener('DOMContentLoaded', () => {
 
-  /* ============================================
-     1. SELECCIÓN DE ELEMENTOS DEL DOM
-     Guardamos referencias a los elementos que
-     vamos a usar repetidamente.
-  ============================================ */
-  const secciones  = document.querySelectorAll('.seccion');   // Todos los paneles
-  const navDots    = document.querySelectorAll('.nav-dot');   // Puntos de navegación
-  const canvasHero = document.getElementById('canvasHero');  // Canvas del hero
+  /* ─────────────────────────────────────
+     1. SELECCIÓN DE ELEMENTOS
+  ───────────────────────────────────── */
+  const secciones = document.querySelectorAll('.seccion');
+  const navDots   = document.querySelectorAll('.nav-dot');
+  const cards     = document.querySelectorAll('.prod-card');
+  const headers   = document.querySelectorAll('.categoria-header');
 
 
-  /* ============================================
+  /* ─────────────────────────────────────
      2. INTERSECTION OBSERVER
-     Esta API detecta cuándo un elemento entra
-     o sale del área visible de la pantalla.
+     Activa animaciones de entrada cuando
+     los elementos son visibles.
+  ───────────────────────────────────── */
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (!entry.isIntersecting) return;
 
-     Cuando una sección es visible:
-     → Le añadimos la clase 'es-activa'
-     → Actualizamos el punto de nav correspondiente
-  ============================================ */
-  const opcionesObserver = {
-    root: null,          // Observa respecto a la ventana del navegador
-    rootMargin: '0px',
-    threshold: 0.3,      // Se activa cuando el 30% de la sección es visible
-  };
+      const el = entry.target;
+      el.classList.add('es-activa');
 
-  const observadorSecciones = new IntersectionObserver((entradas) => {
-    entradas.forEach((entrada) => {
-      // Cuando la sección entra en pantalla:
-      if (entrada.isIntersecting) {
-        // 1. Añadimos la clase que activa las animaciones CSS
-        entrada.target.classList.add('es-activa');
+      // Delay escalonado para tarjetas (efecto cascada)
+      if (el.classList.contains('prod-card')) {
+        const siblings = [...el.parentElement.children];
+        const idx = siblings.indexOf(el);
+        el.style.transitionDelay = (idx % 4) * 0.08 + 's';
+      }
 
-        // 2. Identificamos el índice de la sección
-        const indice = Array.from(secciones).indexOf(entrada.target);
+      // Actualizar punto de nav según sección visible
+      if (el.classList.contains('seccion')) {
+        const idx = Array.from(secciones).indexOf(el);
+        navDots.forEach((d, i) => d.classList.toggle('active', i === idx));
 
-        // 3. Actualizamos el punto de navegación activo
-        actualizarNavDot(indice);
-
-        // 4. Iniciamos partículas específicas de esa sección
-        iniciarParticulasSeccion(entrada.target);
+        // Iniciar partículas de esa sección cuando entra
+        iniciarParticulasSeccion(el);
       }
     });
-  }, opcionesObserver);
+  }, { threshold: 0.12 });
 
-  // Aplicamos el observer a cada sección
-  secciones.forEach((seccion) => {
-    observadorSecciones.observe(seccion);
-  });
-
-
-  /* ============================================
-     3. NAVEGACIÓN LATERAL – PUNTOS
-     Actualiza visualmente qué punto está activo
-     según la sección visible.
-  ============================================ */
-  function actualizarNavDot(indiceActivo) {
-    navDots.forEach((dot, i) => {
-      // Si es el punto de la sección activa → marcarlo
-      if (i === indiceActivo) {
-        dot.classList.add('active');
-      } else {
-        dot.classList.remove('active');
-      }
-    });
-  }
+  // Observamos secciones, tarjetas y encabezados
+  secciones.forEach(s => observer.observe(s));
+  cards.forEach(c => observer.observe(c));
+  headers.forEach(h => observer.observe(h));
 
 
-  /* ============================================
-     4. SCROLL SUAVE AL HACER CLIC EN PUNTOS NAV
-     Cada punto tiene un atributo data-seccion
-     con el número de sección a la que apunta.
-  ============================================ */
-  navDots.forEach((dot) => {
+  /* ─────────────────────────────────────
+     3. NAV LATERAL — click → scroll suave
+  ───────────────────────────────────── */
+  navDots.forEach(dot => {
     dot.addEventListener('click', () => {
-      // Leemos a qué sección debe ir
-      const indiceSec = parseInt(dot.getAttribute('data-seccion'), 10);
-      const seccionDestino = secciones[indiceSec];
-
-      if (seccionDestino) {
-        // Scroll suave hasta esa sección
-        seccionDestino.scrollIntoView({
-          behavior: 'smooth',
-          block: 'start',
-        });
-      }
+      const idx = parseInt(dot.dataset.seccion, 10);
+      const destino = secciones[idx];
+      if (destino) destino.scrollIntoView({ behavior: 'smooth', block: 'start' });
     });
   });
 
 
-  /* ============================================
-     5. SISTEMA DE PARTÍCULAS GLOBAL (HERO)
-     Partículas flotantes sobre el video del hero.
-     Usamos Canvas API para dibujarlas y animarlas.
-  ============================================ */
-  if (canvasHero) {
-    iniciarParticulasHero(canvasHero);
-  }
+  /* ─────────────────────────────────────
+     4. PARTÍCULAS HERO
+     140 partículas multicolores que suben.
+     Colores: dorado, rosa neón, cyan, blanco,
+     verde neón, naranja — representan creatividad.
+  ───────────────────────────────────── */
+  (function iniciarHero() {
+    const canvas = document.getElementById('canvasHero');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
 
-  /* ------------------------------------------
-     Función: iniciarParticulasHero
-     Crea y anima partículas doradas sobre el hero.
-     @param {HTMLCanvasElement} canvas - El canvas donde dibujar
-  ------------------------------------------ */
-  function iniciarParticulasHero(canvas) {
-    const ctx = canvas.getContext('2d');   // Contexto 2D para dibujar
-
-    // Ajustamos el canvas al tamaño de la ventana
-    function ajustarTamano() {
-      canvas.width  = window.innerWidth;
-      canvas.height = window.innerHeight;
+    function resize() {
+      canvas.width  = canvas.offsetWidth  || window.innerWidth;
+      canvas.height = canvas.offsetHeight || window.innerHeight;
     }
-    ajustarTamano();
+    resize();
+    window.addEventListener('resize', resize);
 
-    // Si se redimensiona la ventana, reajustamos el canvas
-    window.addEventListener('resize', ajustarTamano);
-
-    // ------ Configuración de partículas ------
-    const totalParticulas = 60;   // Cuántas partículas hay en pantalla
-    const particulas = [];
-
-    // Colores que pueden tener las partículas
-    const coloresHero = [
-      'rgba(201, 168, 76, 0.6)',   // Dorado
-      'rgba(232, 201, 126, 0.4)',  // Dorado claro
-      'rgba(245, 240, 232, 0.3)', // Crema
+    // Colores vibrantes — uno por partícula
+    const COLS = [
+      'rgba(255,215,0,',    // dorado
+      'rgba(255,60,172,',   // rosa neón
+      'rgba(0,245,255,',    // cyan
+      'rgba(255,255,255,',  // blanco
+      'rgba(57,255,20,',    // verde neón
+      'rgba(255,149,0,',    // naranja
     ];
 
-    /* Creamos cada partícula con propiedades aleatorias */
-    for (let i = 0; i < totalParticulas; i++) {
-      particulas.push(crearParticula());
-    }
+    const N = 140; // cantidad de partículas
 
-    /* ------------------------------------------
-       crearParticula(): devuelve un objeto con
-       todas las propiedades de una partícula nueva.
-    ------------------------------------------ */
-    function crearParticula() {
+    function nuevaParticula() {
       return {
-        x:        Math.random() * canvas.width,    // Posición horizontal aleatoria
-        y:        Math.random() * canvas.height,   // Posición vertical aleatoria
-        radio:    Math.random() * 2 + 0.5,         // Tamaño entre 0.5 y 2.5px
-        colorIdx: Math.floor(Math.random() * coloresHero.length), // Color aleatorio
-        velocidadX: (Math.random() - 0.5) * 0.4,  // Movimiento horizontal suave
-        velocidadY: -Math.random() * 0.5 - 0.2,   // Siempre sube lentamente
-        opacidad:  Math.random(),                   // Opacidad inicial aleatoria
-        oscilacion: Math.random() * Math.PI * 2,   // Fase inicial para oscilar
+        x:  Math.random() * canvas.width,
+        y:  Math.random() * canvas.height,
+        r:  Math.random() * 2.3 + 0.3,          // radio entre 0.3 y 2.6px
+        vx: (Math.random() - 0.5) * 0.5,        // movimiento horizontal suave
+        vy: -(Math.random() * 0.65 + 0.15),     // siempre sube
+        a:  Math.random() * 0.75 + 0.2,         // opacidad
+        ci: Math.floor(Math.random() * COLS.length),
+        o:  Math.random() * Math.PI * 2,        // fase de oscilación
       };
     }
 
-    /* ------------------------------------------
-       Loop de animación: se ejecuta ~60 veces/seg
-       1. Limpia el canvas
-       2. Mueve cada partícula
-       3. Dibuja cada partícula
-    ------------------------------------------ */
-    function animarParticulas() {
-      // Limpiamos el canvas (fondo transparente)
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-      particulas.forEach((p, indice) => {
-        // Movemos la partícula
-        p.x += p.velocidadX + Math.sin(p.oscilacion) * 0.3;
-        p.y += p.velocidadY;
-        p.oscilacion += 0.02;
-
-        // Si la partícula salió por arriba, la reiniciamos abajo
-        if (p.y < -10) {
-          particulas[indice] = {
-            ...crearParticula(),
-            y: canvas.height + 10,  // Empieza desde abajo
-          };
-        }
-
-        // Dibujamos la partícula como un círculo
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, p.radio, 0, Math.PI * 2);
-        ctx.fillStyle = coloresHero[p.colorIdx];
-        ctx.fill();
-      });
-
-      // Solicitamos el siguiente frame de animación
-      requestAnimationFrame(animarParticulas);
-    }
-
-    // Iniciamos el loop
-    animarParticulas();
-  }
-
-
-  /* ============================================
-     6. PARTÍCULAS ESPECÍFICAS POR SECCIÓN
-     Cada sección tiene su propio canvas y tipo
-     de partícula según su temática y color.
-  ============================================ */
-
-  /* Mapa de configuración por canvas ID:
-     cada entrada define el comportamiento
-     de las partículas de esa sección */
-  const configParticulas = {
-    'canvasPapeleria': {
-      color:    'rgba(143, 188, 143, 0.4)',   // Verde salvia
-      cantidad: 25,
-      tamano:   1.5,
-      forma:    'circulo',
-    },
-    'canvasPoleras': {
-      color:    'rgba(192, 57, 43, 0.35)',    // Rojo
-      cantidad: 30,
-      tamano:   1.8,
-      forma:    'circulo',
-    },
-    'canvasTazas': {
-      color:    'rgba(201, 168, 76, 0.5)',    // Dorado
-      cantidad: 35,
-      tamano:   1.2,
-      forma:    'circulo',
-    },
-    'canvasTarjetas': {
-      color:    'rgba(74, 127, 165, 0.4)',    // Azul
-      cantidad: 20,
-      tamano:   2,
-      forma:    'circulo',
-    },
-    'canvasContacto': {
-      color:    'rgba(37, 211, 102, 0.3)',    // Verde WhatsApp
-      cantidad: 40,
-      tamano:   1.5,
-      forma:    'circulo',
-    },
-  };
-
-  /* ------------------------------------------
-     Set para saber qué canvas ya fueron iniciados
-     (evita iniciar el mismo canvas dos veces)
-  ------------------------------------------ */
-  const canvasInicados = new Set();
-
-  /* ------------------------------------------
-     iniciarParticulasSeccion(seccion):
-     Busca el canvas dentro de la sección y
-     lo configura según su ID.
-  ------------------------------------------ */
-  function iniciarParticulasSeccion(seccion) {
-    // Buscamos el canvas de partículas dentro de la sección
-    const canvas = seccion.querySelector('.canvas-seccion');
-
-    if (!canvas) return;                        // Si no hay canvas, salimos
-    if (canvasInicados.has(canvas.id)) return;  // Si ya está iniciado, salimos
-
-    // Marcamos este canvas como iniciado
-    canvasInicados.add(canvas.id);
-
-    // Buscamos la configuración para este canvas
-    const config = configParticulas[canvas.id];
-    if (!config) return;
-
-    // Iniciamos las partículas con la configuración encontrada
-    iniciarCanvasSeccion(canvas, config);
-  }
-
-  /* ------------------------------------------
-     iniciarCanvasSeccion(canvas, config):
-     Crea y anima partículas para un canvas
-     de sección específico.
-  ------------------------------------------ */
-  function iniciarCanvasSeccion(canvas, config) {
-    const ctx = canvas.getContext('2d');
-
-    // Ajustamos el canvas al tamaño de su contenedor (la sección)
-    function ajustar() {
-      canvas.width  = canvas.offsetWidth;
-      canvas.height = canvas.offsetHeight;
-    }
-    ajustar();
-    window.addEventListener('resize', ajustar);
-
-    const particulas = [];
-
-    // Creamos las partículas de la sección
-    for (let i = 0; i < config.cantidad; i++) {
-      particulas.push({
-        x:           Math.random() * canvas.width,
-        y:           Math.random() * canvas.height,
-        radio:       Math.random() * config.tamano + 0.5,
-        velocidadX:  (Math.random() - 0.5) * 0.3,
-        velocidadY:  -Math.random() * 0.3 - 0.1,
-        oscilacion:  Math.random() * Math.PI * 2,
-      });
-    }
+    const ps = Array.from({ length: N }, nuevaParticula);
 
     function loop() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-      particulas.forEach((p, i) => {
-        p.x += p.velocidadX + Math.sin(p.oscilacion) * 0.2;
-        p.y += p.velocidadY;
-        p.oscilacion += 0.01;
+      ps.forEach((p, i) => {
+        // Mover partícula
+        p.x += p.vx + Math.sin(p.o) * 0.38;
+        p.y += p.vy;
+        p.o += 0.018;
 
-        // Reinicia la partícula si sale por arriba
-        if (p.y < -5) {
-          particulas[i].y = canvas.height + 5;
-          particulas[i].x = Math.random() * canvas.width;
+        // Si salió por arriba, reiniciar abajo
+        if (p.y < -8) {
+          ps[i] = { ...nuevaParticula(), y: canvas.height + 8 };
         }
 
-        // Dibujamos
+        // Dibujar
         ctx.beginPath();
-        ctx.arc(p.x, p.y, p.radio, 0, Math.PI * 2);
-        ctx.fillStyle = config.color;
+        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        ctx.fillStyle = COLS[p.ci] + p.a + ')';
+        ctx.fill();
+      });
+
+      requestAnimationFrame(loop);
+    }
+
+    loop();
+  })();
+
+
+  /* ─────────────────────────────────────
+     5. PARTÍCULAS POR SECCIÓN
+     Cada categoría tiene su propio color
+     de partículas. Se inician solo cuando
+     la sección entra en pantalla.
+  ───────────────────────────────────── */
+
+  // Configuración de partículas por canvas ID
+  const CFG_PARTICULAS = {
+    canvasPapeleria:   { color: 'rgba(0,200,83,',   n: 45, r: 1.6 },
+    canvasSublimacion: { color: 'rgba(255,149,0,',  n: 50, r: 1.4 },
+    canvasPoleras:     { color: 'rgba(255,60,172,', n: 40, r: 1.7 },
+    canvasOtros:       { color: 'rgba(0,122,255,',  n: 35, r: 1.5 },
+    canvas3d:          { color: 'rgba(175,82,222,', n: 38, r: 1.8 },
+    canvasContacto:    { color: 'rgba(37,211,102,', n: 55, r: 1.4 },
+  };
+
+  // Evitamos iniciar el mismo canvas más de una vez
+  const iniciados = new Set();
+
+  function iniciarParticulasSeccion(seccion) {
+    const canvas = seccion.querySelector('.canvas-seccion');
+    if (!canvas || iniciados.has(canvas.id)) return;
+    iniciados.add(canvas.id);
+
+    const cfg = CFG_PARTICULAS[canvas.id];
+    if (!cfg) return;
+
+    const ctx = canvas.getContext('2d');
+
+    function resize() {
+      canvas.width  = canvas.offsetWidth;
+      canvas.height = canvas.offsetHeight;
+    }
+    resize();
+    window.addEventListener('resize', resize);
+
+    function nuevaP() {
+      return {
+        x:  Math.random() * canvas.width,
+        y:  Math.random() * canvas.height,
+        r:  Math.random() * cfg.r + 0.4,
+        vx: (Math.random() - 0.5) * 0.32,
+        vy: -(Math.random() * 0.38 + 0.08),
+        o:  Math.random() * Math.PI * 2,
+        a:  Math.random() * 0.5 + 0.15,
+      };
+    }
+
+    const ps = Array.from({ length: cfg.n }, nuevaP);
+
+    function loop() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      ps.forEach((p, i) => {
+        p.x += p.vx + Math.sin(p.o) * 0.22;
+        p.y += p.vy;
+        p.o += 0.012;
+
+        if (p.y < -5) {
+          ps[i] = { ...nuevaP(), y: canvas.height + 5 };
+        }
+
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        ctx.fillStyle = cfg.color + p.a + ')';
         ctx.fill();
       });
 
@@ -336,34 +219,93 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
 
-  /* ============================================
-     7. LINKS DE ANCLA CON SCROLL SUAVE
-     Los botones "Solicitar diseño" enlazan a #seccion-5.
-     Este código asegura que el scroll sea suave.
-  ============================================ */
-  document.querySelectorAll('a[href^="#"]').forEach((enlace) => {
-    enlace.addEventListener('click', (e) => {
-      const destino = document.querySelector(enlace.getAttribute('href'));
+  /* ─────────────────────────────────────
+     6. SCROLL SUAVE EN LINKS DE ANCLA
+  ───────────────────────────────────── */
+  document.querySelectorAll('a[href^="#"]').forEach(a => {
+    a.addEventListener('click', e => {
+      const destino = document.querySelector(a.getAttribute('href'));
       if (destino) {
-        e.preventDefault();       // Evitamos el salto brusco por defecto
-        destino.scrollIntoView({
-          behavior: 'smooth',
-          block: 'start',
-        });
+        e.preventDefault();
+        destino.scrollIntoView({ behavior: 'smooth', block: 'start' });
       }
     });
   });
 
 
-  /* ============================================
-     8. INICIALIZACIÓN
-     La primera sección (hero) se activa de inmediato
-     sin esperar al scroll.
-  ============================================ */
-  if (secciones.length > 0) {
-    setTimeout(() => {
-      secciones[0].classList.add('es-activa');
-    }, 100);  // Pequeño delay para que las animaciones CSS se disparen bien
+  /* ─────────────────────────────────────
+     7. MODAL DE PEDIDO
+     Abre al hacer clic en cualquier "Pedir".
+     Incluye contador de unidades y genera
+     el mensaje de WhatsApp automáticamente.
+  ───────────────────────────────────── */
+  const overlay       = document.getElementById('modalOverlay');
+  const btnCerrar     = document.getElementById('modalCerrar');
+  const modalProducto = document.getElementById('modalProducto');
+  const cantNum       = document.getElementById('cantNum');
+  const btnMenos      = document.getElementById('cantMenos');
+  const btnMas        = document.getElementById('cantMas');
+  const modalWsp      = document.getElementById('modalWsp');
+
+  // Número de WhatsApp real de AmFra
+  const WSP_NUM = '56949312725';
+
+  let productoActual = '';
+  let cantidad = 1;
+
+  // Función que actualiza el link de WhatsApp con producto y cantidad
+  function actualizarLink() {
+    const msg = `Hola AmFra! 👋 Quiero pedir:\n\n• Producto: ${productoActual}\n• Cantidad: ${cantidad} unidad${cantidad > 1 ? 'es' : ''}\n\n¿Puedes cotizarme? 🎨`;
+    modalWsp.href = `https://wa.me/${WSP_NUM}?text=${encodeURIComponent(msg)}`;
   }
 
-}); // Fin del DOMContentLoaded
+  // Abrir modal al hacer clic en "Pedir"
+  document.querySelectorAll('.btn-pedir').forEach(btn => {
+    btn.addEventListener('click', () => {
+      productoActual = btn.dataset.producto || 'Producto';
+      cantidad = 1;
+      cantNum.textContent = cantidad;
+      modalProducto.textContent = productoActual;
+      actualizarLink();
+      overlay.classList.add('abierto');
+      document.body.style.overflow = 'hidden'; // evita scroll de fondo
+    });
+  });
+
+  // Cerrar modal
+  function cerrarModal() {
+    overlay.classList.remove('abierto');
+    document.body.style.overflow = '';
+  }
+
+  btnCerrar.addEventListener('click', cerrarModal);
+
+  // Cerrar al hacer clic fuera del modal
+  overlay.addEventListener('click', e => {
+    if (e.target === overlay) cerrarModal();
+  });
+
+  // Cerrar con Escape
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') cerrarModal();
+  });
+
+  // Botón +
+  btnMas.addEventListener('click', () => {
+    if (cantidad < 999) {
+      cantidad++;
+      cantNum.textContent = cantidad;
+      actualizarLink();
+    }
+  });
+
+  // Botón −
+  btnMenos.addEventListener('click', () => {
+    if (cantidad > 1) {
+      cantidad--;
+      cantNum.textContent = cantidad;
+      actualizarLink();
+    }
+  });
+
+}); // fin DOMContentLoaded

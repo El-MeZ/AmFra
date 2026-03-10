@@ -1,400 +1,962 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>AmFra – Tus diseños en buenas manos</title>
-<!-- 
-  =====================================================
-  ARCHIVO PRINCIPAL: index.html
-  Todo el CSS y JS está embebido en este único archivo.
-  Así evitamos problemas de rutas en GitHub Pages u 
-  otros hostings donde css/ y js/ no cargan correctamente.
-  =====================================================
--->
-<link rel="preconnect" href="https://fonts.googleapis.com"/>
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
-<style>
-:root{
-  --color-oscuro:#0a0a0a;--color-crema:#f5f0e8;--color-dorado:#c9a84c;
-  --color-dorado-2:#e8c97e;--color-gris-claro:#888;--acento-contacto:#25D366;
-  --fuente-display:'Playfair Display',serif;--fuente-cuerpo:'DM Sans',sans-serif;
-  --transicion:0.6s cubic-bezier(.25,.46,.45,.94);
-}
-*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
-html{scroll-behavior:smooth;overflow-x:hidden}
-body{font-family:var(--fuente-cuerpo);background:var(--color-oscuro);color:var(--color-crema);overflow-x:hidden}
-video{display:block}
-a{text-decoration:none;color:inherit}
-img{max-width:100%;height:100%;object-fit:cover;display:block}
+/* ================================================
+   AmFra – Landing Page
+   css/style.css
 
-/* NAV */
-.nav-lateral{position:fixed;right:1.8rem;top:50%;transform:translateY(-50%);z-index:1000;display:flex;flex-direction:column;gap:.9rem}
-.nav-dot{width:9px;height:9px;border-radius:50%;background:rgba(255,255,255,.25);border:1px solid rgba(255,255,255,.4);cursor:pointer;transition:var(--transicion);position:relative}
-.nav-dot.active{background:var(--color-dorado);border-color:var(--color-dorado);transform:scale(1.4)}
-.nav-dot::before{content:attr(title);position:absolute;right:1.8rem;top:50%;transform:translateY(-50%);background:rgba(0,0,0,.8);color:var(--color-crema);font-size:.65rem;letter-spacing:.05em;padding:.25rem .6rem;border-radius:3px;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity .3s}
-.nav-dot:hover::before{opacity:1}
+   CAMBIOS vs versión anterior:
+   • Fuentes: Bebas Neue (títulos impacto) + Outfit (cuerpo legible)
+   • Overlay hero: mucho más transparente (video visible)
+   • Secciones de producto: fondo más claro con mejor contraste
+   • Números y títulos: colores sólidos, bien visibles
+   • Partículas: configuradas en main.js con mayor densidad
+   • Tarjetas de producto: blancas/claras para máxima legibilidad
+   • Modal de pedido con contador de unidades
+
+   Estructura:
+   1. Variables CSS
+   2. Reset y base
+   3. Navegación lateral
+   4. Hero
+   5. Secciones de categoría
+   6. Tarjetas de producto
+   7. Sección contacto
+   8. Modal de pedido
+   9. Animaciones
+   10. Responsive
+================================================ */
+
+
+/* ================================================
+   1. VARIABLES CSS
+================================================ */
+:root {
+  /* Paleta base */
+  --negro:       #080808;
+  --blanco:      #ffffff;
+  --crema:       #fff9f2;
+
+  /* Acento dorado hero */
+  --dorado:      #FFD700;
+  --dorado2:     #FF9500;
+  --rosa-neon:   #FF3CAC;
+
+  /* Colores de categoría — usados en números, líneas y badges */
+  --c-papel:     #00C853;   /* verde brillante   — papelería */
+  --c-subli:     #FF9500;   /* naranja           — sublimación */
+  --c-polera:    #FF3CAC;   /* rosa magenta      — poleras */
+  --c-otros:     #007AFF;   /* azul eléctrico    — otros */
+  --c-3d:        #AF52DE;   /* morado            — 3D */
+  --c-wsp:       #25D366;   /* verde WhatsApp    — contacto */
+
+  /* Tipografías */
+  --f-titulo:    'Bebas Neue', sans-serif;  /* impacto visual máximo */
+  --f-cuerpo:    'Outfit', sans-serif;       /* lectura cómoda en todo */
+
+  /* Transición global */
+  --trans: 0.35s cubic-bezier(.4, 0, .2, 1);
+}
+
+
+/* ================================================
+   2. RESET Y BASE
+================================================ */
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  overflow-x: hidden;
+}
+
+body {
+  font-family: var(--f-cuerpo);
+  background: var(--negro);
+  color: var(--blanco);
+  overflow-x: hidden;
+}
+
+video { display: block; }
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+button {
+  border: none;
+  background: none;
+  cursor: pointer;
+  font: inherit;
+}
+
+
+/* ================================================
+   3. NAVEGACIÓN LATERAL
+   Puntos flotantes a la derecha
+================================================ */
+.nav-lateral {
+  position: fixed;
+  right: 1.5rem;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  gap: .8rem;
+}
+
+.nav-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  cursor: pointer;
+  transition: var(--trans);
+  position: relative;
+}
+
+/* Tooltip al hover */
+.nav-dot::before {
+  content: attr(title);
+  position: absolute;
+  right: 1.6rem;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(0, 0, 0, 0.85);
+  color: #fff;
+  font-family: var(--f-cuerpo);
+  font-size: .62rem;
+  letter-spacing: .06em;
+  padding: .22rem .6rem;
+  border-radius: 4px;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .25s;
+}
+
+.nav-dot:hover::before { opacity: 1; }
+
+.nav-dot.active {
+  background: var(--dorado);
+  border-color: var(--dorado);
+  transform: scale(1.5);
+}
+
+.nav-dot:hover {
+  background: rgba(255, 255, 255, 0.8);
+}
+
+
+/* ================================================
+   4. SECCIÓN HERO
+   Video con overlay MUY transparente arriba
+   y contenido en la parte baja del panel
+================================================ */
+.seccion {
+  position: relative;
+  width: 100%;
+  min-height: 100vh;
+  min-height: 100dvh;   /* fix Safari móvil */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  /* Visible por defecto — evita problemas con IntersectionObserver en móvil */
+  opacity: 1;
+  transform: none;
+}
+
+.canvas-particulas {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* ── Video fondo ── */
+.seccion-hero { align-items: flex-end; padding-bottom: 8vh; }
+
+.capa-video {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+}
+
+.capa-video video {
+  width: 100%; height: 100%;
+  min-width: 100%; min-height: 100%;
+  object-fit: cover;
+  object-position: center top;
+}
 
 /*
-  FIX PRINCIPAL – SECCIONES:
-  opacity:1 y transform:none → las secciones son visibles por defecto.
-  En móvil el IntersectionObserver puede tardar o no dispararse al cargar,
-  lo que antes dejaba todo invisible. Ahora las animaciones son progresivas.
-  FIX 100dvh: Safari móvil calcula 100vh incluyendo la barra del browser,
-  dvh usa el viewport real disponible.
+  OVERLAY HERO — clave para ver el video:
+  Casi transparente arriba (0%) → oscuro solo en la franja
+  donde está el texto (parte baja)
 */
-.seccion{
-  position:relative;width:100%;
-  min-height:100vh;min-height:100dvh;
-  display:flex;align-items:center;justify-content:center;overflow:hidden;
-  opacity:1;transform:none;
-  transition:opacity .9s ease,transform .9s ease;
-}
-.seccion.es-activa{opacity:1;transform:translateY(0)}
-.canvas-particulas{position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:1}
-
-/* HERO */
-.seccion-hero{background:var(--color-oscuro)}
-.capa-video{position:absolute;inset:0;z-index:0;overflow:hidden}
-/*
-  FIX VIDEO MÓVIL:
-  min-width/min-height:100% garantiza que el video cubra todo el contenedor
-  en Safari iOS donde object-fit:cover a veces no es suficiente.
-*/
-.capa-video video{width:100%;height:100%;min-width:100%;min-height:100%;object-fit:cover;object-position:center}
-.capa-overlay{position:absolute;inset:0;z-index:2;background:linear-gradient(to bottom,rgba(0,0,0,.35) 0%,rgba(0,0,0,.55) 50%,rgba(0,0,0,.82) 100%)}
-.capa-contenido{position:relative;z-index:10;text-align:center}
-.hero-contenido{display:flex;flex-direction:column;align-items:center;gap:1.4rem;padding:2rem}
-
-.linea-deco{width:80px;height:2px;background:linear-gradient(90deg,transparent,var(--color-dorado),transparent);animation:brillar-linea 2s ease-in-out infinite alternate}
-@keyframes brillar-linea{from{width:55px;opacity:.6}to{width:115px;opacity:1}}
-
-.marca-nombre{font-family:var(--fuente-display);font-size:clamp(4.5rem,12vw,10rem);font-weight:900;line-height:.9;letter-spacing:-.02em;text-transform:uppercase;animation:aparecer-nombre 1.5s ease forwards;opacity:0;text-shadow:0 0 80px rgba(201,168,76,.35)}
-.letra-am{color:var(--color-crema)}
-.letra-fra{color:var(--color-dorado);position:relative}
-.letra-fra::after{content:'Fra';position:absolute;left:0;top:0;color:var(--color-dorado-2);filter:blur(22px);opacity:.5;animation:pulsar-dorado 3s ease-in-out infinite alternate}
-@keyframes pulsar-dorado{from{opacity:.3;filter:blur(18px)}to{opacity:.7;filter:blur(30px)}}
-@keyframes aparecer-nombre{from{opacity:0;transform:translateY(40px) scale(.95)}to{opacity:1;transform:translateY(0) scale(1)}}
-
-.eslogan{font-family:var(--fuente-display);font-style:italic;font-size:clamp(1rem,2.2vw,1.55rem);color:var(--color-crema);letter-spacing:.15em;opacity:0;animation:aparecer-eslogan 1.5s ease .8s forwards}
-.eslogan-texto::before,.eslogan-texto::after{content:' · ';color:var(--color-dorado)}
-@keyframes aparecer-eslogan{from{opacity:0;letter-spacing:.3em}to{opacity:.9;letter-spacing:.15em}}
-
-.scroll-indicador{margin-top:1.5rem;opacity:0;animation:aparecer-eslogan 1s ease 2s forwards}
-.flecha-scroll{display:inline-block;font-size:1.4rem;color:var(--color-dorado);animation:rebotar 1.5s ease-in-out infinite}
-@keyframes rebotar{0%,100%{transform:translateY(0)}50%{transform:translateY(10px)}}
-
-/* FIX PADDING PRODUCTO: 4rem 1rem en lugar de var(--espacio-seccion) 4rem → no desborda en móvil */
-.seccion-producto{padding:4rem 1rem;background:var(--color-oscuro)}
-.seccion-papeleria{background:linear-gradient(135deg,#0a0a0a 60%,#0d1a0d);border-top:1px solid rgba(143,188,143,.18)}
-.seccion-poleras{background:linear-gradient(135deg,#0a0a0a 60%,#1a0d0d);border-top:1px solid rgba(192,57,43,.18)}
-.seccion-tazas{background:linear-gradient(135deg,#0a0a0a 60%,#1a160a);border-top:1px solid rgba(201,168,76,.18)}
-.seccion-tarjetas{background:linear-gradient(135deg,#0a0a0a 60%,#0a0f1a);border-top:1px solid rgba(74,127,165,.18)}
-
-.producto-layout{display:grid;grid-template-columns:1fr 1fr;gap:5rem;width:100%;max-width:1280px;align-items:center;position:relative;z-index:5}
-.layout-invertido{direction:rtl}
-.layout-invertido>*{direction:ltr}
-
-.producto-imagen-wrap{position:relative}
-.producto-imagen-marco{position:relative;width:100%;aspect-ratio:4/5;overflow:hidden;border-radius:4px;box-shadow:0 0 0 1px rgba(255,255,255,.07),0 30px 70px rgba(0,0,0,.55)}
-.producto-imagen-marco:hover .producto-imagen{transform:scale(1.05)}
-.producto-imagen{width:100%;height:100%;object-fit:cover;transition:transform .8s ease}
-.imagen-placeholder{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1rem;background:linear-gradient(135deg,#181818,#252525);border:1px dashed rgba(255,255,255,.09)}
-.sin-imagen .producto-imagen{display:none}
-.placeholder-icono{font-size:3.5rem;opacity:.35}
-.placeholder-texto{font-size:.75rem;color:var(--color-gris-claro);letter-spacing:.12em;text-transform:uppercase}
-/* FIX: prefijo Safari para user-select */
-.numero-deco{position:absolute;bottom:-1.2rem;right:-1.2rem;font-family:var(--fuente-display);font-size:7rem;font-weight:900;color:rgba(255,255,255,.025);line-height:1;pointer-events:none;-webkit-user-select:none;user-select:none}
-
-.producto-info{display:flex;flex-direction:column;gap:1.4rem}
-.producto-categoria{font-size:.72rem;font-weight:500;letter-spacing:.25em;text-transform:uppercase;color:var(--color-dorado);padding-left:2.3rem;position:relative}
-.producto-categoria::before{content:'';position:absolute;left:0;top:50%;width:1.6rem;height:1px;background:var(--color-dorado)}
-.producto-titulo{font-family:var(--fuente-display);font-size:clamp(2rem,4.5vw,4.2rem);font-weight:700;line-height:1.1;color:var(--color-crema);opacity:0;transform:translateX(-18px);transition:opacity .8s ease .2s,transform .8s ease .2s}
-.producto-titulo em{font-style:italic;color:var(--color-dorado)}
-.seccion.es-activa .producto-titulo{opacity:1;transform:translateX(0)}
-.producto-descripcion{font-size:clamp(.88rem,1.4vw,1.05rem);line-height:1.85;color:var(--color-gris-claro);max-width:400px}
-.producto-precio-wrap{display:flex;align-items:baseline;gap:.5rem;margin-top:.4rem}
-.precio-desde{font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;color:var(--color-gris-claro)}
-.precio-valor{font-family:var(--fuente-display);font-size:clamp(1.9rem,3.5vw,2.8rem);font-weight:700;color:var(--color-crema)}
-.precio-moneda{font-size:.82rem;color:var(--color-gris-claro)}
-.btn-producto{display:inline-block;margin-top:.4rem;padding:.85rem 2.3rem;border:1px solid var(--color-dorado);color:var(--color-dorado);font-size:.78rem;letter-spacing:.15em;text-transform:uppercase;transition:all .4s ease;position:relative;overflow:hidden;width:fit-content}
-.btn-producto::before{content:'';position:absolute;inset:0;background:var(--color-dorado);transform:translateX(-100%);transition:transform .4s ease;z-index:-1}
-.btn-producto:hover{color:var(--color-oscuro)}
-.btn-producto:hover::before{transform:translateX(0)}
-
-@keyframes entrada-suave{from{opacity:0;transform:translateY(28px)}to{opacity:1;transform:translateY(0)}}
-@keyframes entrada-imagen{from{opacity:0;transform:scale(.95) translateY(18px)}to{opacity:1;transform:scale(1) translateY(0)}}
-.seccion.es-activa .producto-categoria{animation:entrada-suave .7s ease .1s both}
-.seccion.es-activa .producto-descripcion{animation:entrada-suave .7s ease .4s both}
-.seccion.es-activa .producto-precio-wrap{animation:entrada-suave .7s ease .55s both}
-.seccion.es-activa .btn-producto{animation:entrada-suave .7s ease .7s both}
-.seccion.es-activa .producto-imagen-marco{animation:entrada-imagen .9s ease .2s both}
-
-/* CONTACTO */
-.seccion-contacto{background:linear-gradient(135deg,#050505 0%,#0f0f0f 100%);border-top:1px solid rgba(37,211,102,.12)}
-.contacto-bg-deco{position:absolute;width:550px;height:550px;border-radius:50%;border:1px solid rgba(37,211,102,.05);top:50%;left:50%;transform:translate(-50%,-50%);animation:girar-lento 20s linear infinite}
-.contacto-bg-deco::before{content:'';position:absolute;inset:40px;border-radius:50%;border:1px solid rgba(37,211,102,.08)}
-@keyframes girar-lento{from{transform:translate(-50%,-50%) rotate(0deg)}to{transform:translate(-50%,-50%) rotate(360deg)}}
-.contacto-contenido{position:relative;z-index:5;display:flex;flex-direction:column;align-items:center;gap:2.8rem;text-align:center;padding:4rem 2rem;max-width:680px}
-.contacto-encabezado{display:flex;flex-direction:column;align-items:center;gap:1.4rem}
-.contacto-titulo{font-family:var(--fuente-display);font-size:clamp(2.3rem,5.5vw,4.8rem);font-weight:700;line-height:1.1;color:var(--color-crema)}
-.contacto-titulo em{font-style:italic;color:var(--acento-contacto)}
-.contacto-subtitulo{font-size:clamp(.88rem,1.4vw,1.05rem);line-height:1.8;color:var(--color-gris-claro)}
-.btn-whatsapp{display:inline-flex;align-items:center;gap:1rem;padding:1.15rem 2.8rem;background:var(--acento-contacto);color:#fff;font-size:1rem;font-weight:500;letter-spacing:.05em;border-radius:60px;transition:all .4s ease;box-shadow:0 10px 40px rgba(37,211,102,.22)}
-.btn-whatsapp:hover{background:#1ebe5d;transform:translateY(-3px);box-shadow:0 20px 55px rgba(37,211,102,.38)}
-.wsp-icono{width:22px;height:22px;fill:currentColor;flex-shrink:0}
-.contacto-nota{font-size:.78rem;color:var(--color-gris-claro)}
-.seccion.es-activa .contacto-encabezado{animation:entrada-suave .8s ease both}
-.seccion.es-activa .contacto-acciones{animation:entrada-suave .8s ease .3s both}
-.seccion.es-activa .pie-pagina{animation:entrada-suave .8s ease .5s both}
-.pie-pagina{margin-top:1.5rem;border-top:1px solid rgba(255,255,255,.06);padding-top:2rem;display:flex;flex-direction:column;align-items:center;gap:.5rem}
-.pie-marca{font-family:var(--fuente-display);font-size:1.4rem;font-weight:700;letter-spacing:.1em;color:var(--color-dorado)}
-.pie-eslogan{font-size:.72rem;letter-spacing:.2em;text-transform:uppercase;color:var(--color-gris-claro)}
-
-/* TABLET */
-@media(max-width:1024px){.seccion-producto{padding:4rem 2.5rem}.producto-layout{gap:3rem}}
-
-/* MÓVIL */
-@media(max-width:768px){
-  /* FIX: prefijo -webkit- para backdrop-filter en Safari iOS */
-  .nav-lateral{right:auto;bottom:1.5rem;top:auto;left:50%;transform:translateX(-50%);flex-direction:row;background:rgba(0,0,0,.5);padding:.6rem 1rem;border-radius:40px;-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
-  .nav-dot::before{display:none}
-  .seccion-producto{padding:4rem 1.5rem;min-height:auto}
-  .producto-layout,.layout-invertido{grid-template-columns:1fr;direction:ltr;gap:2.5rem}
-  .layout-invertido .producto-imagen-wrap{order:-1}
-  .producto-imagen-marco{aspect-ratio:3/2}
-  .numero-deco{font-size:5rem;right:0;bottom:-.8rem}
-  .producto-descripcion{max-width:100%}
-  .marca-nombre{font-size:clamp(4rem,20vw,7rem)}
+.capa-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  background: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0.00) 0%,
+    rgba(0, 0, 0, 0.05) 38%,
+    rgba(0, 0, 0, 0.68) 70%,
+    rgba(8, 8, 8, 0.96) 100%
+  );
 }
 
-/* MÓVIL PEQUEÑO */
-@media(max-width:480px){
-  .hero-contenido{padding:1rem}
-  .marca-nombre{font-size:clamp(3rem,18vw,6rem)}
-  .eslogan{font-size:1rem;text-align:center}
-  .seccion-producto{padding:3rem 1rem}
-  .btn-producto{width:100%;text-align:center}
-  .btn-whatsapp{padding:1rem 1.6rem;font-size:.9rem}
+/* ── Contenido hero ── */
+.capa-contenido {
+  position: relative;
+  z-index: 10;
+  text-align: center;
 }
-</style>
-</head>
-<body>
 
-<nav class="nav-lateral" id="navLateral">
-  <span class="nav-dot active" data-seccion="0" title="Inicio"></span>
-  <span class="nav-dot" data-seccion="1" title="Papelería"></span>
-  <span class="nav-dot" data-seccion="2" title="Poleras"></span>
-  <span class="nav-dot" data-seccion="3" title="Tazas"></span>
-  <span class="nav-dot" data-seccion="4" title="Tarjetas"></span>
-  <span class="nav-dot" data-seccion="5" title="Contacto"></span>
-</nav>
+.hero-contenido {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.2rem;
+  padding: 0 1.5rem;
+  max-width: 900px;
+  width: 100%;
+}
 
-<!-- HERO -->
-<section class="seccion seccion-hero" id="seccion-0">
-  <div class="capa-video">
-    <video autoplay muted loop playsinline src="https://res.cloudinary.com/dojb5ylvf/video/upload/v1773102384/bling-export-1773102335938_bf0fyb.mp4"></video>
-  </div>
-  <div class="capa-overlay"></div>
-  <canvas class="canvas-particulas" id="canvasHero"></canvas>
-  <div class="capa-contenido hero-contenido">
-    <div class="linea-deco"></div>
-    <h1 class="marca-nombre"><span class="letra-am">Am</span><span class="letra-fra">Fra</span></h1>
-    <p class="eslogan"><span class="eslogan-texto">Tus diseños en buenas manos</span></p>
-    <div class="linea-deco"></div>
-    <div class="scroll-indicador"><span class="flecha-scroll">↓</span></div>
-  </div>
-</section>
+/* Línea decorativa dorada */
+.linea-deco {
+  width: 80px;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--dorado), transparent);
+  animation: brillar-linea 2s ease-in-out infinite alternate;
+}
 
-<!-- PAPELERÍA -->
-<section class="seccion seccion-producto seccion-papeleria" id="seccion-1">
-  <canvas class="canvas-particulas canvas-seccion" id="canvasPapeleria"></canvas>
-  <div class="producto-layout">
-    <div class="producto-imagen-wrap">
-      <div class="producto-imagen-marco sin-imagen">
-        <img src="URL_DE_TU_IMAGEN_AQUI" alt="Papelería personalizada AmFra" class="producto-imagen"/>
-        <div class="imagen-placeholder"><span class="placeholder-icono">📄</span><span class="placeholder-texto">Imagen próximamente</span></div>
-      </div>
-      <span class="numero-deco">01</span>
-    </div>
-    <div class="producto-info">
-      <span class="producto-categoria">Papelería</span>
-      <h2 class="producto-titulo">Papelería<br/><em>personalizada</em></h2>
-      <p class="producto-descripcion">Agendas, cuadernos, sobres, hojas membretadas y mucho más. Cada pieza diseñada con tu identidad de marca.</p>
-      <div class="producto-precio-wrap"><span class="precio-desde">desde</span><span class="precio-valor">$XXXX</span><span class="precio-moneda">CLP</span></div>
-      <a href="#seccion-5" class="btn-producto">Solicitar diseño</a>
-    </div>
-  </div>
-</section>
+@keyframes brillar-linea {
+  from { width: 55px; opacity: .6; }
+  to   { width: 120px; opacity: 1; }
+}
 
-<!-- POLERAS -->
-<section class="seccion seccion-producto seccion-poleras" id="seccion-2">
-  <canvas class="canvas-particulas canvas-seccion" id="canvasPoleras"></canvas>
-  <div class="producto-layout layout-invertido">
-    <div class="producto-info">
-      <span class="producto-categoria">Indumentaria</span>
-      <h2 class="producto-titulo">Poleras con<br/><em>tu diseño</em></h2>
-      <p class="producto-descripcion">Estampados de alta calidad en poleras 100% algodón. Perfectas para equipos, regalos o tu propia marca.</p>
-      <div class="producto-precio-wrap"><span class="precio-desde">desde</span><span class="precio-valor">$XXXX</span><span class="precio-moneda">CLP</span></div>
-      <a href="#seccion-5" class="btn-producto">Solicitar diseño</a>
-    </div>
-    <div class="producto-imagen-wrap">
-      <div class="producto-imagen-marco sin-imagen">
-        <img src="URL_DE_TU_IMAGEN_AQUI" alt="Poleras AmFra" class="producto-imagen"/>
-        <div class="imagen-placeholder"><span class="placeholder-icono">👕</span><span class="placeholder-texto">Imagen próximamente</span></div>
-      </div>
-      <span class="numero-deco">02</span>
-    </div>
-  </div>
-</section>
+/* NOMBRE AMFRA — Bebas Neue gigante */
+.marca-nombre {
+  font-family: var(--f-titulo);
+  font-size: clamp(7rem, 24vw, 20rem);
+  line-height: .82;
+  letter-spacing: .04em;
+  opacity: 0;
+  animation: aparecer-nombre 1s ease .3s forwards;
+}
 
-<!-- TAZAS -->
-<section class="seccion seccion-producto seccion-tazas" id="seccion-3">
-  <canvas class="canvas-particulas canvas-seccion" id="canvasTazas"></canvas>
-  <div class="producto-layout">
-    <div class="producto-imagen-wrap">
-      <div class="producto-imagen-marco sin-imagen">
-        <img src="URL_DE_TU_IMAGEN_AQUI" alt="Tazas personalizadas AmFra" class="producto-imagen"/>
-        <div class="imagen-placeholder"><span class="placeholder-icono">☕</span><span class="placeholder-texto">Imagen próximamente</span></div>
-      </div>
-      <span class="numero-deco">03</span>
-    </div>
-    <div class="producto-info">
-      <span class="producto-categoria">Tazas</span>
-      <h2 class="producto-titulo">Tazas<br/><em>únicas</em></h2>
-      <p class="producto-descripcion">Sublimadas con tu arte o logo. Ideales para regalar, vender o usar en tu negocio. ¡Cada sorbo con tu marca!</p>
-      <div class="producto-precio-wrap"><span class="precio-desde">desde</span><span class="precio-valor">$XXXX</span><span class="precio-moneda">CLP</span></div>
-      <a href="#seccion-5" class="btn-producto">Solicitar diseño</a>
-    </div>
-  </div>
-</section>
+.letra-am { color: #fff; }
 
-<!-- TARJETAS -->
-<section class="seccion seccion-producto seccion-tarjetas" id="seccion-4">
-  <canvas class="canvas-particulas canvas-seccion" id="canvasTarjetas"></canvas>
-  <div class="producto-layout layout-invertido">
-    <div class="producto-info">
-      <span class="producto-categoria">Identidad</span>
-      <h2 class="producto-titulo">Tarjetas de<br/><em>presentación</em></h2>
-      <p class="producto-descripcion">Tu primera impresión importa. Diseños profesionales en papel premium que no pasan desapercibidos.</p>
-      <div class="producto-precio-wrap"><span class="precio-desde">desde</span><span class="precio-valor">$XXXX</span><span class="precio-moneda">CLP</span></div>
-      <a href="#seccion-5" class="btn-producto">Solicitar diseño</a>
-    </div>
-    <div class="producto-imagen-wrap">
-      <div class="producto-imagen-marco sin-imagen">
-        <img src="URL_DE_TU_IMAGEN_AQUI" alt="Tarjetas AmFra" class="producto-imagen"/>
-        <div class="imagen-placeholder"><span class="placeholder-icono">🪪</span><span class="placeholder-texto">Imagen próximamente</span></div>
-      </div>
-      <span class="numero-deco">04</span>
-    </div>
-  </div>
-</section>
+/* "Fra" con gradiente dorado→rosa, muy llamativo */
+.letra-fra {
+  background: linear-gradient(125deg, var(--dorado) 0%, var(--dorado2) 45%, var(--rosa-neon) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  filter: drop-shadow(0 0 45px rgba(255, 210, 0, .6));
+}
 
-<!-- CONTACTO -->
-<section class="seccion seccion-contacto" id="seccion-5">
-  <canvas class="canvas-particulas canvas-seccion" id="canvasContacto"></canvas>
-  <div class="contacto-bg-deco"></div>
-  <div class="contacto-contenido">
-    <div class="contacto-encabezado">
-      <div class="linea-deco"></div>
-      <h2 class="contacto-titulo">¿Listo para<br/><em>crear algo increíble?</em></h2>
-      <p class="contacto-subtitulo">Cuéntanos tu idea y nosotros la hacemos realidad.<br/>Estamos para ayudarte.</p>
-    </div>
-    <div class="contacto-acciones">
-      <a href="https://wa.me/56912345678?text=Hola%20AmFra!%20Me%20interesa%20hacer%20un%20dise%C3%B1o%20personalizado%20%F0%9F%8E%A8" target="_blank" rel="noopener noreferrer" class="btn-whatsapp">
-        <svg class="wsp-icono" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
-        Escribirnos por WhatsApp
-      </a>
-      <p class="contacto-nota" style="margin-top:1rem">También puedes escribirnos directamente y te respondemos a la brevedad.</p>
-    </div>
-    <footer class="pie-pagina">
-      <p class="pie-marca">AmFra</p>
-      <p class="pie-eslogan">Tus diseños en buenas manos</p>
-    </footer>
-  </div>
-</section>
+@keyframes aparecer-nombre {
+  from { opacity: 0; transform: translateY(40px) scale(.96); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
 
-<script>
-document.addEventListener('DOMContentLoaded', () => {
-  const secciones = document.querySelectorAll('.seccion');
-  const navDots   = document.querySelectorAll('.nav-dot');
+/* Eslogan — Outfit, legible, elegante */
+.eslogan {
+  font-family: var(--f-cuerpo);
+  font-size: clamp(.95rem, 2.8vw, 1.45rem);
+  font-weight: 300;
+  letter-spacing: .22em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, .9);
+  opacity: 0;
+  animation: aparecer-eslogan 1s ease .85s forwards;
+}
 
-  // Observer: solo activa animaciones internas, ya no controla visibilidad base
-  const obs = new IntersectionObserver((entradas) => {
-    entradas.forEach(e => {
-      if (e.isIntersecting) {
-        e.target.classList.add('es-activa');
-        const idx = Array.from(secciones).indexOf(e.target);
-        navDots.forEach((d,i) => d.classList.toggle('active', i === idx));
-        iniciarSeccion(e.target);
-      }
-    });
-  }, { threshold: 0.2 });
-  secciones.forEach(s => obs.observe(s));
+.eslogan-texto::before,
+.eslogan-texto::after {
+  content: ' · ';
+  color: var(--dorado);
+  font-weight: 700;
+}
 
-  // Nav dots
-  navDots.forEach(d => {
-    d.addEventListener('click', () => {
-      secciones[+d.dataset.seccion]?.scrollIntoView({ behavior:'smooth', block:'start' });
-    });
-  });
+@keyframes aparecer-eslogan {
+  from { opacity: 0; letter-spacing: .4em; }
+  to   { opacity: .92; letter-spacing: .22em; }
+}
 
-  // Anchor links suaves
-  document.querySelectorAll('a[href^="#"]').forEach(a => {
-    a.addEventListener('click', e => {
-      const dest = document.querySelector(a.getAttribute('href'));
-      if (dest) { e.preventDefault(); dest.scrollIntoView({ behavior:'smooth', block:'start' }); }
-    });
-  });
+/* Botón hero */
+.btn-hero {
+  display: inline-block;
+  padding: .85rem 2.5rem;
+  background: linear-gradient(135deg, var(--dorado), var(--dorado2));
+  color: #000;
+  font-family: var(--f-cuerpo);
+  font-weight: 800;
+  font-size: .9rem;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  border-radius: 6px;
+  transition: var(--trans);
+  box-shadow: 0 0 35px rgba(255, 210, 0, .4);
+  opacity: 0;
+  animation: aparecer-eslogan 1s ease 1.3s forwards;
+}
 
-  // Hero activo inmediatamente
-  secciones[0]?.classList.add('es-activa');
+.btn-hero:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 0 60px rgba(255, 210, 0, .7);
+}
 
-  // Partículas hero
-  const ch = document.getElementById('canvasHero');
-  if (ch) {
-    const ctx = ch.getContext('2d');
-    const r = () => { ch.width = ch.offsetWidth; ch.height = ch.offsetHeight; };
-    r(); window.addEventListener('resize', r);
-    const cols = ['rgba(201,168,76,0.6)','rgba(232,201,126,0.4)','rgba(245,240,232,0.3)'];
-    const nP = () => ({ x:Math.random()*ch.width, y:Math.random()*ch.height, r:Math.random()*2+.5, ci:Math.floor(Math.random()*3), vx:(Math.random()-.5)*.4, vy:-Math.random()*.5-.2, o:Math.random()*Math.PI*2 });
-    const ps = Array.from({length:55}, nP);
-    const loop = () => {
-      ctx.clearRect(0,0,ch.width,ch.height);
-      ps.forEach((p,i) => { p.x+=p.vx+Math.sin(p.o)*.3; p.y+=p.vy; p.o+=.02; if(p.y<-10) ps[i]={...nP(),y:ch.height+10}; ctx.beginPath(); ctx.arc(p.x,p.y,p.r,0,Math.PI*2); ctx.fillStyle=cols[p.ci]; ctx.fill(); });
-      requestAnimationFrame(loop);
-    };
-    loop();
+/* Flecha de scroll */
+.scroll-indicador {
+  position: absolute;
+  bottom: 1.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+  opacity: 0;
+  animation: aparecer-eslogan 1s ease 2.1s forwards;
+}
+
+.flecha-scroll {
+  display: inline-block;
+  font-size: 1.6rem;
+  color: var(--dorado);
+  animation: rebotar 1.6s ease-in-out infinite;
+}
+
+@keyframes rebotar {
+  0%, 100% { transform: translateY(0); }
+  50%       { transform: translateY(10px); }
+}
+
+
+/* ================================================
+   5. SECCIONES DE CATEGORÍA
+   Fondo claro alternado para máxima legibilidad
+================================================ */
+.seccion-categoria {
+  align-items: flex-start;
+  min-height: auto;       /* No forzar 100vh en secciones con muchos productos */
+  padding: 4rem 1.5rem 3.5rem;
+}
+
+/* Alternamos blanco/gris para separar visualmente las categorías */
+.seccion-papeleria   { background: #f7f7f7; }
+.seccion-sublimacion { background: #ffffff; }
+.seccion-poleras     { background: #f5f5f5; }
+.seccion-otros       { background: #ffffff; }
+.seccion-3d          { background: #f7f7f7; }
+
+/* Contenedor interior */
+.categoria-contenido {
+  position: relative;
+  z-index: 5;
+  width: 100%;
+  max-width: 1380px;
+  margin: 0 auto;
+}
+
+/* ── Encabezado de categoría ── */
+.categoria-header {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  margin-bottom: 2.5rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 2px solid rgba(0, 0, 0, .08);
+  opacity: 0;
+  transform: translateY(16px);
+  transition: opacity .65s ease, transform .65s ease;
+}
+
+.categoria-header.es-activa { opacity: 1; transform: translateY(0); }
+
+/* Número grande de categoría — colored pill */
+.cat-numero {
+  font-family: var(--f-titulo);
+  font-size: clamp(3.5rem, 8vw, 6.5rem);
+  line-height: 1;
+  flex-shrink: 0;
+  padding: .1rem .6rem;
+  border-radius: 10px;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.seccion-papeleria   .cat-numero { background: var(--c-papel); color: #000; }
+.seccion-sublimacion .cat-numero { background: var(--c-subli); color: #000; }
+.seccion-poleras     .cat-numero { background: var(--c-polera); color: #fff; }
+.seccion-otros       .cat-numero { background: var(--c-otros); color: #fff; }
+.seccion-3d          .cat-numero { background: var(--c-3d); color: #fff; }
+
+/* Etiqueta pequeña */
+.cat-etiqueta {
+  display: block;
+  font-size: .65rem;
+  font-weight: 800;
+  letter-spacing: .38em;
+  text-transform: uppercase;
+  margin-bottom: .3rem;
+}
+
+.seccion-papeleria   .cat-etiqueta { color: var(--c-papel); }
+.seccion-sublimacion .cat-etiqueta { color: var(--c-subli); }
+.seccion-poleras     .cat-etiqueta { color: var(--c-polera); }
+.seccion-otros       .cat-etiqueta { color: var(--c-otros); }
+.seccion-3d          .cat-etiqueta { color: var(--c-3d); }
+
+/* Título de categoría */
+.cat-titulo {
+  font-family: var(--f-titulo);
+  font-size: clamp(2.8rem, 6vw, 5.5rem);
+  line-height: .9;
+  letter-spacing: .02em;
+  color: #111;
+}
+
+.cat-titulo em { font-style: normal; }
+
+.seccion-papeleria   .cat-titulo em { color: var(--c-papel); }
+.seccion-sublimacion .cat-titulo em { color: var(--c-subli); }
+.seccion-poleras     .cat-titulo em { color: var(--c-polera); }
+.seccion-otros       .cat-titulo em { color: var(--c-otros); }
+.seccion-3d          .cat-titulo em { color: var(--c-3d); }
+
+/* Línea decorativa lateral */
+.cat-linea {
+  width: 3px;
+  height: 70px;
+  border-radius: 2px;
+  align-self: center;
+  flex-shrink: 0;
+}
+
+.seccion-papeleria   .cat-linea { background: var(--c-papel); }
+.seccion-sublimacion .cat-linea { background: var(--c-subli); }
+.seccion-poleras     .cat-linea { background: var(--c-polera); }
+.seccion-otros       .cat-linea { background: var(--c-otros); }
+.seccion-3d          .cat-linea { background: var(--c-3d); }
+
+
+/* ================================================
+   6. GRILLA Y TARJETAS DE PRODUCTO
+================================================ */
+.productos-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1rem;
+}
+
+/* Tarjeta — blanca, legible, borde de color al hover */
+.prod-card {
+  background: #fff;
+  border: 2px solid #efefef;
+  border-radius: 14px;
+  overflow: hidden;
+  cursor: pointer;
+  opacity: 0;
+  transform: translateY(18px);
+  transition: opacity .45s ease, transform .45s ease, border-color .3s, box-shadow .3s;
+}
+
+.prod-card.es-activa { opacity: 1; transform: translateY(0); }
+
+.prod-card:hover {
+  transform: translateY(-7px);
+  box-shadow: 0 18px 42px rgba(0, 0, 0, .13);
+}
+
+/* Borde de color al hover por categoría */
+.seccion-papeleria   .prod-card:hover { border-color: var(--c-papel); }
+.seccion-sublimacion .prod-card:hover { border-color: var(--c-subli); }
+.seccion-poleras     .prod-card:hover { border-color: var(--c-polera); }
+.seccion-otros       .prod-card:hover { border-color: var(--c-otros); }
+.seccion-3d          .prod-card:hover { border-color: var(--c-3d); }
+
+/* Imagen del producto */
+.prod-img {
+  aspect-ratio: 1 / 1;
+  position: relative;
+  overflow: hidden;
+  background: #f3f3f3;
+}
+
+.prod-img img { transition: transform .55s ease; }
+.prod-card:hover .prod-img img { transform: scale(1.07); }
+
+/* Placeholder cuando no hay imagen */
+.prod-placeholder {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: .5rem;
+  background: linear-gradient(135deg, #f0f0f0, #e8e8e8);
+}
+
+.prod-placeholder span {
+  font-size: 2.6rem;
+  opacity: .55;
+}
+
+.prod-placeholder p {
+  font-size: .58rem;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: #bbb;
+  font-weight: 600;
+}
+
+/* Badges: Nuevo / Popular */
+.prod-badge {
+  position: absolute;
+  top: .6rem;
+  left: .6rem;
+  z-index: 2;
+  padding: .2rem .6rem;
+  border-radius: 20px;
+  font-size: .57rem;
+  font-weight: 800;
+  letter-spacing: .07em;
+  text-transform: uppercase;
+}
+
+.prod-badge.nuevo   { background: #111; color: var(--dorado); }
+.prod-badge.popular { background: var(--rosa-neon); color: #fff; }
+
+/* Info del producto */
+.prod-info {
+  padding: .8rem .85rem .75rem;
+}
+
+.prod-nombre {
+  font-family: var(--f-cuerpo);
+  font-weight: 700;
+  font-size: .9rem;
+  line-height: 1.3;
+  color: #111;
+  margin-bottom: .22rem;
+}
+
+.prod-desc {
+  font-size: .72rem;
+  color: #888;
+  line-height: 1.5;
+  margin-bottom: .6rem;
+}
+
+.prod-pie {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: .4rem;
+  flex-wrap: wrap;
+}
+
+.precio-wrap { display: flex; flex-direction: column; }
+
+.precio-desde {
+  font-size: .52rem;
+  font-weight: 700;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: #ccc;
+}
+
+.precio-val {
+  font-family: var(--f-titulo);
+  font-size: 1.55rem;
+  line-height: 1;
+  letter-spacing: .02em;
+}
+
+/* Color del precio por categoría */
+.seccion-papeleria   .precio-val { color: var(--c-papel); }
+.seccion-sublimacion .precio-val { color: var(--c-subli); }
+.seccion-poleras     .precio-val { color: var(--c-polera); }
+.seccion-otros       .precio-val { color: var(--c-otros); }
+.seccion-3d          .precio-val { color: var(--c-3d); }
+
+/* Botón Pedir */
+.btn-pedir {
+  padding: .46rem 1.05rem;
+  border-radius: 8px;
+  font-family: var(--f-cuerpo);
+  font-size: .68rem;
+  font-weight: 800;
+  letter-spacing: .07em;
+  text-transform: uppercase;
+  color: #fff;
+  transition: var(--trans);
+  white-space: nowrap;
+}
+
+.seccion-papeleria   .btn-pedir { background: var(--c-papel); color: #000; }
+.seccion-sublimacion .btn-pedir { background: var(--c-subli); color: #000; }
+.seccion-poleras     .btn-pedir { background: var(--c-polera); }
+.seccion-otros       .btn-pedir { background: var(--c-otros); }
+.seccion-3d          .btn-pedir { background: var(--c-3d); }
+
+.btn-pedir:hover { opacity: .82; transform: scale(1.06); }
+
+
+/* ================================================
+   7. SECCIÓN CONTACTO — oscura, impactante
+================================================ */
+.seccion-contacto {
+  background: linear-gradient(135deg, #050505 0%, #0f0f0f 100%);
+  border-top: 1px solid rgba(37, 211, 102, .12);
+}
+
+.contacto-bg-deco {
+  position: absolute;
+  width: 600px;
+  height: 600px;
+  border-radius: 50%;
+  border: 1px solid rgba(37, 211, 102, .05);
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  animation: girar-lento 20s linear infinite;
+}
+
+.contacto-bg-deco::before {
+  content: '';
+  position: absolute;
+  inset: 45px;
+  border-radius: 50%;
+  border: 1px solid rgba(37, 211, 102, .08);
+}
+
+@keyframes girar-lento {
+  from { transform: translate(-50%, -50%) rotate(0deg); }
+  to   { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+.contacto-contenido {
+  position: relative;
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2.5rem;
+  text-align: center;
+  padding: 4rem 2rem;
+  max-width: 700px;
+}
+
+.contacto-encabezado {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.3rem;
+}
+
+.contacto-titulo {
+  font-family: var(--f-titulo);
+  font-size: clamp(3rem, 8vw, 7rem);
+  line-height: .9;
+  letter-spacing: .03em;
+  color: #fff;
+}
+
+.contacto-titulo em {
+  font-style: normal;
+  background: linear-gradient(135deg, var(--c-wsp), #00E676);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  filter: drop-shadow(0 0 22px rgba(37, 211, 102, .45));
+}
+
+.contacto-subtitulo {
+  font-size: 1rem;
+  color: rgba(255, 255, 255, .5);
+  line-height: 1.8;
+}
+
+/* Botón WhatsApp */
+.btn-whatsapp {
+  display: inline-flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.15rem 2.8rem;
+  background: linear-gradient(135deg, var(--c-wsp), #00E676);
+  color: #fff;
+  font-family: var(--f-cuerpo);
+  font-weight: 800;
+  font-size: 1rem;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  border-radius: 60px;
+  transition: var(--trans);
+  box-shadow: 0 10px 50px rgba(37, 211, 102, .3);
+}
+
+.btn-whatsapp:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 22px 70px rgba(37, 211, 102, .5);
+}
+
+.wsp-icono {
+  width: 22px;
+  height: 22px;
+  fill: currentColor;
+  flex-shrink: 0;
+}
+
+.contacto-nota {
+  font-size: .78rem;
+  color: rgba(255, 255, 255, .3);
+  letter-spacing: .03em;
+}
+
+/* Pie de página */
+.pie-pagina {
+  margin-top: 1rem;
+  border-top: 1px solid rgba(255, 255, 255, .05);
+  padding-top: 1.8rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: .4rem;
+}
+
+.pie-marca {
+  font-family: var(--f-titulo);
+  font-size: 3rem;
+  letter-spacing: .15em;
+  background: linear-gradient(135deg, var(--dorado), var(--rosa-neon));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.pie-eslogan {
+  font-size: .68rem;
+  letter-spacing: .3em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, .22);
+}
+
+
+/* ================================================
+   8. MODAL DE PEDIDO
+   Aparece al hacer clic en "Pedir"
+   Tiene contador de unidades y link a WhatsApp
+================================================ */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  background: rgba(0, 0, 0, .7);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .3s ease;
+}
+
+.modal-overlay.abierto {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.modal-caja {
+  background: #fff;
+  border-radius: 20px;
+  padding: 2.5rem 2rem;
+  max-width: 360px;
+  width: 100%;
+  text-align: center;
+  position: relative;
+  box-shadow: 0 30px 80px rgba(0, 0, 0, .4);
+  transform: scale(.92);
+  transition: transform .3s ease;
+}
+
+.modal-overlay.abierto .modal-caja {
+  transform: scale(1);
+}
+
+.modal-cerrar {
+  position: absolute;
+  top: .9rem;
+  right: .9rem;
+  font-size: 1.1rem;
+  color: #999;
+  cursor: pointer;
+  transition: color .2s;
+  background: none;
+  border: none;
+  padding: .2rem .5rem;
+}
+.modal-cerrar:hover { color: #111; }
+
+.modal-titulo {
+  font-family: var(--f-cuerpo);
+  font-size: .68rem;
+  font-weight: 800;
+  letter-spacing: .35em;
+  text-transform: uppercase;
+  color: #aaa;
+  margin-bottom: .5rem;
+}
+
+.modal-producto {
+  font-family: var(--f-titulo);
+  font-size: 1.9rem;
+  letter-spacing: .04em;
+  color: #111;
+  line-height: 1.1;
+  margin-bottom: 1.5rem;
+}
+
+/* Contador de unidades */
+.modal-cantidad {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1.2rem;
+  margin-bottom: .4rem;
+}
+
+.cant-btn {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: #111;
+  color: #fff;
+  font-size: 1.4rem;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  border: none;
+  transition: var(--trans);
+  font-family: var(--f-cuerpo);
+}
+.cant-btn:hover { background: #333; transform: scale(1.1); }
+
+.cant-num {
+  font-family: var(--f-titulo);
+  font-size: 3rem;
+  color: #111;
+  min-width: 3rem;
+  text-align: center;
+  line-height: 1;
+}
+
+.modal-label {
+  font-size: .7rem;
+  letter-spacing: .15em;
+  text-transform: uppercase;
+  color: #bbb;
+  margin-bottom: 1.8rem;
+}
+
+/* Botón WhatsApp del modal */
+.modal-wsp {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: .8rem;
+  width: 100%;
+  padding: 1rem;
+  background: linear-gradient(135deg, var(--c-wsp), #00E676);
+  color: #fff;
+  font-family: var(--f-cuerpo);
+  font-weight: 800;
+  font-size: .9rem;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  border-radius: 12px;
+  transition: var(--trans);
+  box-shadow: 0 8px 30px rgba(37, 211, 102, .3);
+}
+.modal-wsp:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 14px 40px rgba(37, 211, 102, .5);
+}
+
+
+/* ================================================
+   9. ANIMACIONES DE ENTRADA
+================================================ */
+@keyframes fade-arriba {
+  from { opacity: 0; transform: translateY(22px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+
+/* ================================================
+   10. RESPONSIVE
+================================================ */
+@media (max-width: 1024px) {
+  .seccion-categoria { padding: 3.5rem 1.5rem 3rem; }
+  .productos-grid { grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); }
+}
+
+@media (max-width: 768px) {
+  /* Nav lateral pasa a barra inferior */
+  .nav-lateral {
+    right: auto;
+    bottom: 1.2rem;
+    top: auto;
+    left: 50%;
+    transform: translateX(-50%);
+    flex-direction: row;
+    background: rgba(0, 0, 0, .55);
+    padding: .5rem .9rem;
+    border-radius: 40px;
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+    gap: .7rem;
   }
 
-  // Partículas por sección
-  const cfgSec = {
-    canvasPapeleria:{color:'rgba(143,188,143,0.35)',n:22,r:1.4},
-    canvasPoleras:  {color:'rgba(192,57,43,0.3)',   n:28,r:1.7},
-    canvasTazas:    {color:'rgba(201,168,76,0.45)', n:32,r:1.1},
-    canvasTarjetas: {color:'rgba(74,127,165,0.35)', n:18,r:1.9},
-    canvasContacto: {color:'rgba(37,211,102,0.28)', n:38,r:1.4},
-  };
-  const iniciados = new Set();
-  function iniciarSeccion(sec) {
-    const canvas = sec.querySelector('.canvas-seccion');
-    if (!canvas || iniciados.has(canvas.id)) return;
-    iniciados.add(canvas.id);
-    const c = cfgSec[canvas.id]; if (!c) return;
-    const ctx = canvas.getContext('2d');
-    const resize = () => { canvas.width=canvas.offsetWidth; canvas.height=canvas.offsetHeight; };
-    resize(); window.addEventListener('resize', resize);
-    const nP = () => ({ x:Math.random()*canvas.width, y:Math.random()*canvas.height, r:Math.random()*c.r+.4, vx:(Math.random()-.5)*.3, vy:-Math.random()*.3-.1, o:Math.random()*Math.PI*2 });
-    const ps = Array.from({length:c.n}, nP);
-    const loop = () => {
-      ctx.clearRect(0,0,canvas.width,canvas.height);
-      ps.forEach((p,i) => { p.x+=p.vx+Math.sin(p.o)*.2; p.y+=p.vy; p.o+=.01; if(p.y<-5){ps[i]={...nP(),y:canvas.height+5};} ctx.beginPath(); ctx.arc(p.x,p.y,p.r,0,Math.PI*2); ctx.fillStyle=c.color; ctx.fill(); });
-      requestAnimationFrame(loop);
-    };
-    loop();
-  }
-});
-</script>
-</body>
-</html>
+  .nav-dot::before { display: none; }
+
+  .seccion-categoria { padding: 3rem 1rem 2.5rem; }
+
+  .categoria-header { flex-wrap: wrap; gap: 1rem; }
+  .cat-numero { font-size: 3rem; }
+
+  .productos-grid { grid-template-columns: repeat(2, 1fr); gap: .75rem; }
+
+  /* Hero */
+  .hero-contenido { padding: 0 1rem; }
+}
+
+@media (max-width: 420px) {
+  .productos-grid { gap: .55rem; }
+  .prod-info { padding: .7rem .7rem .65rem; }
+  .prod-nombre { font-size: .82rem; }
+  .precio-val { font-size: 1.3rem; }
+  .btn-pedir { padding: .4rem .75rem; font-size: .62rem; }
+  .cat-titulo { font-size: 2.4rem; }
+  .modal-caja { padding: 2rem 1.5rem; }
+}
