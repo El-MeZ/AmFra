@@ -1,0 +1,900 @@
+/* ================================================
+   AmFra – Landing Page
+   style.css
+   
+   Estructura:
+   1. Variables CSS (colores, fuentes, tamaños)
+   2. Reset y base
+   3. Navegación lateral
+   4. Sección Hero
+   5. Secciones de producto
+   6. Sección de contacto
+   7. Animaciones y estados activos
+   8. Responsive (tablet y móvil)
+================================================ */
+
+
+/* ================================================
+   1. VARIABLES CSS
+   Aquí defines los colores y tipografías globales.
+   Cambiando estas variables, cambias TODO el sitio.
+================================================ */
+:root {
+  /* Paleta de colores principal */
+  --color-oscuro:     #0a0a0a;      /* Negro casi puro – fondo base */
+  --color-crema:      #f5f0e8;      /* Crema cálido – textos principales */
+  --color-dorado:     #c9a84c;      /* Dorado – acento principal */
+  --color-dorado-2:   #e8c97e;      /* Dorado claro – variante */
+  --color-rojo:       #c0392b;      /* Rojo vino – acento secundario */
+  --color-gris-medio: #3a3a3a;      /* Gris oscuro – fondos secciones */
+  --color-gris-claro: #888;         /* Gris – textos secundarios */
+
+  /* Colores de acento por sección de producto */
+  --acento-papeleria: #8fbc8f;      /* Verde salvia */
+  --acento-poleras:   #c0392b;      /* Rojo ladrillo */
+  --acento-tazas:     #c9a84c;      /* Dorado */
+  --acento-tarjetas:  #4a7fa5;      /* Azul pizarra */
+  --acento-contacto:  #25D366;      /* Verde WhatsApp */
+
+  /* Tipografías */
+  --fuente-display: 'Playfair Display', serif;    /* Para títulos y eslogan */
+  --fuente-cuerpo:  'DM Sans', sans-serif;        /* Para texto y precios */
+
+  /* Tamaños de fuente */
+  --tam-hero:       clamp(4rem, 12vw, 10rem);     /* Nombre marca – adaptable */
+  --tam-eslogan:    clamp(1rem, 2.5vw, 1.6rem);   /* Eslogan */
+  --tam-titulo:     clamp(2.2rem, 5vw, 4.5rem);   /* Títulos de sección */
+  --tam-cuerpo:     clamp(0.9rem, 1.5vw, 1.1rem); /* Texto descriptivo */
+
+  /* Espaciados */
+  --espacio-seccion: 8vh;
+
+  /* Transiciones */
+  --transicion: 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+
+/* ================================================
+   2. RESET Y BASE
+   Elimina estilos por defecto del navegador.
+================================================ */
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;       /* Scroll suave al hacer clic en links */
+  overflow-x: hidden;            /* Evita scroll horizontal */
+}
+
+body {
+  font-family: var(--fuente-cuerpo);
+  background-color: var(--color-oscuro);
+  color: var(--color-crema);
+  overflow-x: hidden;
+  cursor: default;
+}
+
+/* Asegura que los videos no generen overflow */
+video {
+  display: block;
+}
+
+/* Links sin subrayado por defecto */
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+/* Imágenes responsivas */
+img {
+  max-width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+
+/* ================================================
+   3. NAVEGACIÓN LATERAL
+   Puntos a la derecha que indican la sección activa.
+   Aparecen flotando sobre el contenido.
+================================================ */
+.nav-lateral {
+  position: fixed;
+  right: 2rem;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 1000;               /* Siempre encima de todo */
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  mix-blend-mode: difference;  /* Contraste automático con el fondo */
+}
+
+/* Cada punto de navegación */
+.nav-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  cursor: pointer;
+  transition: var(--transicion);
+  position: relative;
+}
+
+/* Punto activo (sección visible) */
+.nav-dot.active {
+  background-color: var(--color-dorado);
+  border-color: var(--color-dorado);
+  transform: scale(1.4);
+}
+
+/* Hover sobre punto */
+.nav-dot:hover {
+  background-color: var(--color-crema);
+  transform: scale(1.2);
+}
+
+/* Tooltip con nombre de sección al hacer hover */
+.nav-dot::before {
+  content: attr(title);
+  position: absolute;
+  right: 2rem;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(0,0,0,0.8);
+  color: var(--color-crema);
+  font-family: var(--fuente-cuerpo);
+  font-size: 0.7rem;
+  letter-spacing: 0.05em;
+  padding: 0.3rem 0.7rem;
+  border-radius: 4px;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s;
+}
+
+.nav-dot:hover::before {
+  opacity: 1;
+}
+
+
+/* ================================================
+   SECCIONES – BASE COMPARTIDA
+   Todas las secciones comparten estas propiedades.
+================================================ */
+.seccion {
+  position: relative;
+  width: 100%;
+  min-height: 100vh;            /* Cada sección ocupa al menos toda la pantalla */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;             /* Evita que elementos salgan del panel */
+
+  /* Estado inicial: invisible (se activa al hacer scroll) */
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.9s ease, transform 0.9s ease;
+}
+
+/* Cuando la sección es visible (clase añadida por JS) */
+.seccion.es-activa {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Canvas de partículas (siempre detrás del contenido) */
+.canvas-particulas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;         /* No interfiere con clicks del usuario */
+  z-index: 1;
+}
+
+
+/* ================================================
+   4. SECCIÓN HERO
+   Panel de presentación con video de fondo.
+================================================ */
+.seccion-hero {
+  background-color: var(--color-oscuro);
+}
+
+/* Video de fondo */
+.capa-video {
+  position: absolute;
+  inset: 0;                     /* Equivale a top/right/bottom/left: 0 */
+  z-index: 0;
+  overflow: hidden;
+}
+
+.capa-video video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;            /* El video llena todo sin deformarse */
+  object-position: center;
+}
+
+/* Oscurecimiento sobre el video para que el texto sea legible */
+.capa-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  background: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0.35) 0%,
+    rgba(0, 0, 0, 0.55) 50%,
+    rgba(0, 0, 0, 0.8) 100%
+  );
+}
+
+/* Capa de contenido (texto encima de todo) */
+.capa-contenido {
+  position: relative;
+  z-index: 10;
+  text-align: center;
+}
+
+/* Contenido hero: centrado verticalmente */
+.hero-contenido {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+  padding: 2rem;
+}
+
+/* Líneas decorativas horizontales */
+.linea-deco {
+  width: 80px;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--color-dorado), transparent);
+  animation: brillar-linea 2s ease-in-out infinite alternate;
+}
+
+@keyframes brillar-linea {
+  from { width: 60px; opacity: 0.6; }
+  to   { width: 120px; opacity: 1; }
+}
+
+/* Nombre de la marca "AmFra" */
+.marca-nombre {
+  font-family: var(--fuente-display);
+  font-size: var(--tam-hero);
+  font-weight: 900;
+  line-height: 0.9;
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+  animation: aparecer-nombre 1.5s ease forwards;
+  opacity: 0;
+  text-shadow: 0 0 80px rgba(201, 168, 76, 0.4);
+}
+
+/* "Am" en color crema */
+.letra-am {
+  color: var(--color-crema);
+}
+
+/* "Fra" en dorado con efecto de brillo */
+.letra-fra {
+  color: var(--color-dorado);
+  position: relative;
+}
+
+/* Brillo dorado detrás de "Fra" */
+.letra-fra::after {
+  content: 'Fra';
+  position: absolute;
+  left: 0;
+  top: 0;
+  color: var(--color-dorado-2);
+  filter: blur(20px);
+  opacity: 0.5;
+  animation: pulsar-dorado 3s ease-in-out infinite alternate;
+}
+
+@keyframes pulsar-dorado {
+  from { opacity: 0.3; filter: blur(20px); }
+  to   { opacity: 0.7; filter: blur(30px); }
+}
+
+@keyframes aparecer-nombre {
+  from { opacity: 0; transform: translateY(40px) scale(0.95); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* Eslogan debajo del nombre */
+.eslogan {
+  font-family: var(--fuente-display);
+  font-style: italic;
+  font-size: var(--tam-eslogan);
+  color: var(--color-crema);
+  letter-spacing: 0.15em;
+  opacity: 0;
+  animation: aparecer-eslogan 1.5s ease 0.8s forwards;
+}
+
+/* Pequeño punto dorado antes del eslogan */
+.eslogan-texto::before,
+.eslogan-texto::after {
+  content: ' · ';
+  color: var(--color-dorado);
+}
+
+@keyframes aparecer-eslogan {
+  from { opacity: 0; letter-spacing: 0.3em; }
+  to   { opacity: 0.9; letter-spacing: 0.15em; }
+}
+
+/* Indicador de scroll (flecha animada) */
+.scroll-indicador {
+  margin-top: 2rem;
+  opacity: 0;
+  animation: aparecer-eslogan 1s ease 2s forwards;
+}
+
+.flecha-scroll {
+  display: inline-block;
+  font-size: 1.5rem;
+  color: var(--color-dorado);
+  animation: rebotar 1.5s ease-in-out infinite;
+}
+
+@keyframes rebotar {
+  0%, 100% { transform: translateY(0); }
+  50%       { transform: translateY(10px); }
+}
+
+
+/* ================================================
+   5. SECCIONES DE PRODUCTO
+   Layout de dos columnas: imagen + texto.
+================================================ */
+.seccion-producto {
+  background-color: var(--color-oscuro);
+  padding: var(--espacio-seccion) 4rem;
+}
+
+/* Separación visual entre secciones con línea de color */
+.seccion-papeleria  { border-top: 1px solid rgba(143, 188, 143, 0.2); }
+.seccion-poleras    { border-top: 1px solid rgba(192, 57, 43, 0.2);   }
+.seccion-tazas      { border-top: 1px solid rgba(201, 168, 76, 0.2);  }
+.seccion-tarjetas   { border-top: 1px solid rgba(74, 127, 165, 0.2);  }
+
+/* Fondos sutiles distintos por sección */
+.seccion-papeleria  { background: linear-gradient(135deg, #0a0a0a 60%, #0d1a0d); }
+.seccion-poleras    { background: linear-gradient(135deg, #0a0a0a 60%, #1a0d0d); }
+.seccion-tazas      { background: linear-gradient(135deg, #0a0a0a 60%, #1a160a); }
+.seccion-tarjetas   { background: linear-gradient(135deg, #0a0a0a 60%, #0a0f1a); }
+
+/* Layout de dos columnas */
+.producto-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;   /* Dos columnas iguales */
+  gap: 6rem;
+  width: 100%;
+  max-width: 1300px;
+  align-items: center;
+  position: relative;
+  z-index: 5;
+}
+
+/* Layout invertido: imagen a la derecha */
+.layout-invertido {
+  direction: rtl;               /* Truco CSS: invierte el orden sin cambiar HTML */
+}
+
+.layout-invertido > * {
+  direction: ltr;               /* Restaura dirección de texto normal */
+}
+
+
+/* ===== MARCO DE IMAGEN ===== */
+.producto-imagen-wrap {
+  position: relative;
+}
+
+/* Marco visual alrededor de la imagen */
+.producto-imagen-marco {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 4 / 5;           /* Proporción vertical (como póster) */
+  overflow: hidden;
+  border-radius: 4px;
+
+  /* Marco decorativo doblado */
+  box-shadow:
+    0 0 0 1px rgba(255,255,255,0.08),
+    0 30px 80px rgba(0,0,0,0.5);
+}
+
+/* Efecto hover en el marco de imagen */
+.producto-imagen-marco:hover .producto-imagen {
+  transform: scale(1.05);
+}
+
+/* La imagen dentro del marco */
+.producto-imagen {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.8s ease;
+}
+
+/* Placeholder cuando no hay imagen */
+.imagen-placeholder {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  background: linear-gradient(135deg, #1a1a1a, #2a2a2a);
+  border: 1px dashed rgba(255,255,255,0.1);
+}
+
+/* Cuando la imagen falla (onerror), mostrar placeholder */
+.sin-imagen .producto-imagen {
+  display: none;
+}
+
+.placeholder-icono {
+  font-size: 4rem;
+  opacity: 0.4;
+}
+
+.placeholder-texto {
+  font-family: var(--fuente-cuerpo);
+  font-size: 0.8rem;
+  color: var(--color-gris-claro);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+/* Número decorativo grande a la esquina */
+.numero-deco {
+  position: absolute;
+  bottom: -1.5rem;
+  right: -1.5rem;
+  font-family: var(--fuente-display);
+  font-size: 8rem;
+  font-weight: 900;
+  color: rgba(255,255,255,0.03);
+  line-height: 1;
+  pointer-events: none;
+  user-select: none;
+}
+
+
+/* ===== INFORMACIÓN DEL PRODUCTO ===== */
+.producto-info {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* Etiqueta de categoría pequeña arriba del título */
+.producto-categoria {
+  font-family: var(--fuente-cuerpo);
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--color-dorado);
+  padding-left: 2.5rem;
+  position: relative;
+}
+
+/* Línea antes de la categoría */
+.producto-categoria::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  width: 1.8rem;
+  height: 1px;
+  background-color: var(--color-dorado);
+}
+
+/* Título principal del producto */
+.producto-titulo {
+  font-family: var(--fuente-display);
+  font-size: var(--tam-titulo);
+  font-weight: 700;
+  line-height: 1.1;
+  color: var(--color-crema);
+
+  /* Animación de entrada (se activa con JS) */
+  opacity: 0;
+  transform: translateX(-20px);
+  transition: opacity 0.8s ease 0.2s, transform 0.8s ease 0.2s;
+}
+
+/* El <em> en el título es en dorado e itálico */
+.producto-titulo em {
+  font-style: italic;
+  color: var(--color-dorado);
+}
+
+/* Cuando la sección está activa, el título aparece */
+.seccion.es-activa .producto-titulo {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+/* Descripción del producto */
+.producto-descripcion {
+  font-size: var(--tam-cuerpo);
+  line-height: 1.8;
+  color: var(--color-gris-claro);
+  max-width: 420px;
+}
+
+/* Bloque de precio */
+.producto-precio-wrap {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.precio-desde {
+  font-size: 0.75rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-gris-claro);
+}
+
+/* Precio principal grande */
+.precio-valor {
+  font-family: var(--fuente-display);
+  font-size: clamp(2rem, 4vw, 3rem);
+  font-weight: 700;
+  color: var(--color-crema);
+}
+
+.precio-moneda {
+  font-size: 0.85rem;
+  color: var(--color-gris-claro);
+}
+
+/* Botón de acción del producto */
+.btn-producto {
+  display: inline-block;
+  margin-top: 0.5rem;
+  padding: 0.9rem 2.5rem;
+  border: 1px solid var(--color-dorado);
+  color: var(--color-dorado);
+  font-family: var(--fuente-cuerpo);
+  font-size: 0.8rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  transition: all 0.4s ease;
+  position: relative;
+  overflow: hidden;
+  width: fit-content;
+}
+
+/* Efecto de relleno al hacer hover en el botón */
+.btn-producto::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-color: var(--color-dorado);
+  transform: translateX(-100%);
+  transition: transform 0.4s ease;
+  z-index: -1;
+}
+
+.btn-producto:hover {
+  color: var(--color-oscuro);
+}
+
+.btn-producto:hover::before {
+  transform: translateX(0);
+}
+
+
+/* ================================================
+   6. SECCIÓN DE CONTACTO
+================================================ */
+.seccion-contacto {
+  background: linear-gradient(135deg, #050505 0%, #111 100%);
+  border-top: 1px solid rgba(37, 211, 102, 0.15);
+}
+
+/* Forma geométrica decorativa de fondo */
+.contacto-bg-deco {
+  position: absolute;
+  width: 600px;
+  height: 600px;
+  border-radius: 50%;
+  border: 1px solid rgba(37, 211, 102, 0.05);
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  animation: girar-lento 20s linear infinite;
+}
+
+.contacto-bg-deco::before {
+  content: '';
+  position: absolute;
+  inset: 40px;
+  border-radius: 50%;
+  border: 1px solid rgba(37, 211, 102, 0.08);
+}
+
+@keyframes girar-lento {
+  from { transform: translate(-50%, -50%) rotate(0deg); }
+  to   { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+/* Contenido de la sección de contacto */
+.contacto-contenido {
+  position: relative;
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3rem;
+  text-align: center;
+  padding: 4rem 2rem;
+  max-width: 700px;
+}
+
+/* Encabezado de contacto */
+.contacto-encabezado {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+/* Título de contacto */
+.contacto-titulo {
+  font-family: var(--fuente-display);
+  font-size: clamp(2.5rem, 6vw, 5rem);
+  font-weight: 700;
+  line-height: 1.1;
+  color: var(--color-crema);
+}
+
+.contacto-titulo em {
+  font-style: italic;
+  color: var(--acento-contacto);
+}
+
+.contacto-subtitulo {
+  font-size: var(--tam-cuerpo);
+  line-height: 1.8;
+  color: var(--color-gris-claro);
+}
+
+/* Botón de WhatsApp */
+.btn-whatsapp {
+  display: inline-flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.2rem 3rem;
+  background-color: var(--acento-contacto);
+  color: #fff;
+  font-family: var(--fuente-cuerpo);
+  font-size: 1rem;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  border-radius: 60px;
+  transition: all 0.4s ease;
+  box-shadow: 0 10px 40px rgba(37, 211, 102, 0.25);
+}
+
+.btn-whatsapp:hover {
+  background-color: #1ebe5d;
+  transform: translateY(-3px);
+  box-shadow: 0 20px 60px rgba(37, 211, 102, 0.4);
+}
+
+.btn-whatsapp:active {
+  transform: translateY(0);
+}
+
+/* Ícono de WhatsApp dentro del botón */
+.wsp-icono {
+  width: 24px;
+  height: 24px;
+  fill: currentColor;
+  flex-shrink: 0;
+}
+
+/* Nota debajo del botón */
+.contacto-nota {
+  font-size: 0.8rem;
+  color: var(--color-gris-claro);
+  letter-spacing: 0.03em;
+}
+
+/* Pie de página */
+.pie-pagina {
+  margin-top: 2rem;
+  border-top: 1px solid rgba(255,255,255,0.06);
+  padding-top: 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.pie-marca {
+  font-family: var(--fuente-display);
+  font-size: 1.5rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: var(--color-dorado);
+}
+
+.pie-eslogan {
+  font-size: 0.75rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--color-gris-claro);
+}
+
+
+/* ================================================
+   7. ANIMACIONES GENERALES DE ENTRADA
+   Se activan cuando el JS añade la clase .es-activa
+================================================ */
+
+/* Fade in con subida */
+@keyframes entrada-suave {
+  from { opacity: 0; transform: translateY(30px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Los hijos del layout de producto se animan en cadena */
+.seccion.es-activa .producto-categoria {
+  animation: entrada-suave 0.7s ease 0.1s both;
+}
+
+.seccion.es-activa .producto-descripcion {
+  animation: entrada-suave 0.7s ease 0.4s both;
+}
+
+.seccion.es-activa .producto-precio-wrap {
+  animation: entrada-suave 0.7s ease 0.55s both;
+}
+
+.seccion.es-activa .btn-producto {
+  animation: entrada-suave 0.7s ease 0.7s both;
+}
+
+.seccion.es-activa .producto-imagen-marco {
+  animation: entrada-imagen 0.9s ease 0.2s both;
+}
+
+@keyframes entrada-imagen {
+  from { opacity: 0; transform: scale(0.95) translateY(20px); }
+  to   { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.seccion.es-activa .contacto-encabezado,
+.seccion.es-activa .contacto-acciones,
+.seccion.es-activa .pie-pagina {
+  animation: entrada-suave 0.8s ease both;
+}
+
+.seccion.es-activa .contacto-acciones {
+  animation-delay: 0.3s;
+}
+
+.seccion.es-activa .pie-pagina {
+  animation-delay: 0.5s;
+}
+
+
+/* ================================================
+   8. RESPONSIVE – TABLET (max 1024px)
+================================================ */
+@media (max-width: 1024px) {
+  .seccion-producto {
+    padding: var(--espacio-seccion) 2.5rem;
+  }
+
+  .producto-layout {
+    gap: 3rem;
+  }
+}
+
+/* ================================================
+   RESPONSIVE – MÓVIL (max 768px)
+   En móvil, las dos columnas pasan a una sola.
+================================================ */
+@media (max-width: 768px) {
+
+  /* Navegación lateral: se mueve abajo y se hace horizontal */
+  .nav-lateral {
+    right: auto;
+    bottom: 1.5rem;
+    top: auto;
+    left: 50%;
+    transform: translateX(-50%);
+    flex-direction: row;
+    background: rgba(0,0,0,0.5);
+    padding: 0.6rem 1rem;
+    border-radius: 40px;
+    backdrop-filter: blur(10px);
+  }
+
+  /* Tooltip de puntos deshabilitado en móvil */
+  .nav-dot::before {
+    display: none;
+  }
+
+  /* Secciones de producto en columna */
+  .seccion-producto {
+    padding: 4rem 1.5rem;
+    min-height: auto;           /* En móvil pueden ser más largas sin forzar 100vh */
+  }
+
+  .producto-layout,
+  .layout-invertido {
+    grid-template-columns: 1fr;   /* Una sola columna */
+    direction: ltr;
+    gap: 2.5rem;
+  }
+
+  /* En móvil, la imagen siempre va primero */
+  .layout-invertido .producto-imagen-wrap {
+    order: -1;
+  }
+
+  /* Imagen menos alta en móvil */
+  .producto-imagen-marco {
+    aspect-ratio: 3 / 2;
+  }
+
+  .numero-deco {
+    font-size: 5rem;
+    right: 0;
+    bottom: -1rem;
+  }
+
+  /* Descripción de producto ancho completo */
+  .producto-descripcion {
+    max-width: 100%;
+  }
+
+  /* Título de hero más pequeño */
+  .marca-nombre {
+    font-size: clamp(4rem, 20vw, 7rem);
+  }
+}
+
+/* ================================================
+   RESPONSIVE – MÓVIL PEQUEÑO (max 480px)
+================================================ */
+@media (max-width: 480px) {
+
+  .seccion-producto {
+    padding: 3rem 1rem;
+  }
+
+  .btn-producto {
+    width: 100%;
+    text-align: center;
+  }
+
+  .btn-whatsapp {
+    padding: 1rem 1.8rem;
+    font-size: 0.9rem;
+  }
+}
