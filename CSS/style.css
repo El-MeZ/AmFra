@@ -178,8 +178,8 @@ img {
   overflow: hidden;             /* Evita que elementos salgan del panel */
 
   /* Estado inicial: invisible (se activa al hacer scroll) */
-  opacity: 0;
-  transform: translateY(30px);
+opacity: 1;
+transform: none;
   transition: opacity 0.9s ease, transform 0.9s ease;
 }
 
@@ -212,7 +212,7 @@ img {
 /* Video de fondo */
 .capa-video {
   position: absolute;
-  inset: 0;                     /* Equivale a top/right/bottom/left: 0 */
+  inset: 0;
   z-index: 0;
   overflow: hidden;
 }
@@ -220,10 +220,11 @@ img {
 .capa-video video {
   width: 100%;
   height: 100%;
-  object-fit: cover;            /* El video llena todo sin deformarse */
+  min-width: 100%;
+  min-height: 100%;
+  object-fit: cover;
   object-position: center;
 }
-
 /* Oscurecimiento sobre el video para que el texto sea legible */
 .capa-overlay {
   position: absolute;
@@ -361,7 +362,7 @@ img {
 ================================================ */
 .seccion-producto {
   background-color: var(--color-oscuro);
-  padding: var(--espacio-seccion) 4rem;
+  padding: 4rem 1rem;
 }
 
 /* Separación visual entre secciones con línea de color */
@@ -472,7 +473,8 @@ img {
   color: rgba(255,255,255,0.03);
   line-height: 1;
   pointer-events: none;
-  user-select: none;
+-webkit-user-select: none;
+user-select: none;
 }
 
 
@@ -821,18 +823,20 @@ img {
 @media (max-width: 768px) {
 
   /* Navegación lateral: se mueve abajo y se hace horizontal */
-  .nav-lateral {
-    right: auto;
-    bottom: 1.5rem;
-    top: auto;
-    left: 50%;
-    transform: translateX(-50%);
-    flex-direction: row;
-    background: rgba(0,0,0,0.5);
-    padding: 0.6rem 1rem;
-    border-radius: 40px;
-    backdrop-filter: blur(10px);
-  }
+.nav-lateral {
+  right: auto;
+  bottom: 1.5rem;
+  top: auto;
+  left: 50%;
+  transform: translateX(-50%);
+  flex-direction: row;
+  background: rgba(0,0,0,0.5);
+  padding: 0.6rem 1rem;
+  border-radius: 40px;
+
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+}
 
   /* Tooltip de puntos deshabilitado en móvil */
   .nav-dot::before {
@@ -883,7 +887,18 @@ img {
    RESPONSIVE – MÓVIL PEQUEÑO (max 480px)
 ================================================ */
 @media (max-width: 480px) {
+.hero-contenido{
+  padding:1rem;
+}
 
+.marca-nombre{
+  font-size:clamp(3rem,18vw,6rem);
+}
+
+.eslogan{
+  font-size:1rem;
+  text-align:center;
+}
   .seccion-producto {
     padding: 3rem 1rem;
   }
