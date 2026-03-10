@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AmFra – Tus diseños en buenas manos</title>
+
+  <!-- =============================================
+       FUENTES DE GOOGLE FONTS
+       Playfair Display: elegante para títulos
+       DM Sans: limpia y moderna para cuerpo
+  ============================================= -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+  <!-- =============================================
+       NAVEGACIÓN LATERAL (puntos indicadores)
+       Cada punto representa una sección.
+       Se activa con JS al hacer scroll.
+  ============================================= -->
+  <nav class="nav-lateral" id="navLateral">
+    <span class="nav-dot active" data-seccion="0" title="Inicio"></span>
+    <span class="nav-dot" data-seccion="1" title="Papelería"></span>
+    <span class="nav-dot" data-seccion="2" title="Poleras"></span>
+    <span class="nav-dot" data-seccion="3" title="Tazas"></span>
+    <span class="nav-dot" data-seccion="4" title="Tarjetas"></span>
+    <span class="nav-dot" data-seccion="5" title="Contacto"></span>
+  </nav>
+
+  <!-- =============================================
+       SECCIÓN 1: HERO / PRESENTACIÓN
+       Fondo con video desde Cloudinary.
+       Contiene el nombre y eslogan de la marca.
+  ============================================= -->
+  <section class="seccion seccion-hero" id="seccion-0">
+
+    <!-- Capa de video de fondo -->
+    <div class="capa-video">
+      <video
+        autoplay
+        muted
+        loop
+        playsinline
+        src="https://res.cloudinary.com/dojb5ylvf/video/upload/v1773102384/bling-export-1773102335938_bf0fyb.mp4"
+      ></video>
+    </div>
+
+    <!-- Capa de oscurecimiento sobre el video -->
+    <div class="capa-overlay"></div>
+
+    <!-- Canvas para partículas flotantes en el hero -->
+    <canvas class="canvas-particulas" id="canvasHero"></canvas>
+
+    <!-- Contenido principal del hero -->
+    <div class="capa-contenido hero-contenido">
+      <!-- Línea decorativa superior -->
+      <div class="linea-deco"></div>
+
+      <!-- Nombre de la marca -->
+      <h1 class="marca-nombre">
+        <span class="letra-am">Am</span><span class="letra-fra">Fra</span>
+      </h1>
+
+      <!-- Eslogan con efecto de aparición letra por letra -->
+      <p class="eslogan">
+        <span class="eslogan-texto">Tus diseños en buenas manos</span>
+      </p>
+
+      <!-- Línea decorativa inferior -->
+      <div class="linea-deco"></div>
+
+      <!-- Flecha para invitar a hacer scroll -->
+      <div class="scroll-indicador">
+        <span class="flecha-scroll">↓</span>
+      </div>
+    </div>
+
+  </section>
+
+  <!-- =============================================
+       SECCIÓN 2: PAPELERÍA
+       Panel de producto con imagen y precio.
+       Reemplaza la URL de imagen cuando tengas una.
+  ============================================= -->
+  <section class="seccion seccion-producto seccion-papeleria" id="seccion-1">
+
+    <!-- Canvas de partículas específico de esta sección -->
+    <canvas class="canvas-particulas canvas-seccion" id="canvasPapeleria"></canvas>
+
+    <!-- Layout del producto: imagen izquierda, texto derecha -->
+    <div class="producto-layout">
+
+      <!-- Imagen del producto (reemplaza la URL cuando tengas foto real) -->
+      <div class="producto-imagen-wrap">
+        <div class="producto-imagen-marco">
+          <!-- 
+            IMAGEN PAPELERÍA:
+            Reemplaza "URL_DE_TU_IMAGEN_AQUI" con el link real de Cloudinary u otro servicio.
+            Ejemplo: src="https://res.cloudinary.com/tu-cuenta/image/upload/v123/papeleria.jpg"
+          -->
+          <img
+            src="URL_DE_TU_IMAGEN_AQUI"
+            alt="Papelería personalizada AmFra"
+            class="producto-imagen"
+            onerror="this.parentElement.classList.add('sin-imagen')"
+          />
+          <!-- Placeholder visible cuando no hay imagen -->
+          <div class="imagen-placeholder">
+            <span class="placeholder-icono">📄</span>
+            <span class="placeholder-texto">Imagen próximamente</span>
+          </div>
+        </div>
+        <!-- Número decorativo de sección -->
+        <span class="numero-deco">01</span>
+      </div>
+
+      <!-- Información del producto -->
+      <div class="producto-info">
+        <span class="producto-categoria">Papelería</span>
+        <h2 class="producto-titulo">Papelería<br /><em>personalizada</em></h2>
+        <p class="producto-descripcion">
+          Agendas, cuadernos, sobres, hojas membretadas y mucho más.
+          Cada pieza diseñada con tu identidad de marca.
+        </p>
+        <!-- Precio del producto -->
+        <div class="producto-precio-wrap">
+          <span class="precio-desde">desde</span>
+          <!-- Reemplaza el precio cuando lo tengas definido -->
+          <span class="precio-valor">$XXXX</span>
+          <span class="precio-moneda">CLP</span>
+        </div>
+        <a href="#seccion-5" class="btn-producto">Solicitar diseño</a>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- =============================================
+       SECCIÓN 3: POLERAS
+       Mismo layout pero invertido (texto izquierda, imagen derecha)
+  ============================================= -->
+  <section class="seccion seccion-producto seccion-poleras" id="seccion-2">
+
+    <canvas class="canvas-particulas canvas-seccion" id="canvasPoleras"></canvas>
+
+    <!-- Layout invertido: texto a la izquierda, imagen a la derecha -->
+    <div class="producto-layout layout-invertido">
+
+      <!-- Información del producto -->
+      <div class="producto-info">
+        <span class="producto-categoria">Indumentaria</span>
+        <h2 class="producto-titulo">Poleras con<br /><em>tu diseño</em></h2>
+        <p class="producto-descripcion">
+          Estampados de alta calidad en poleras 100% algodón.
+          Perfectas para equipos, regalos o tu propia marca.
+        </p>
+        <div class="producto-precio-wrap">
+          <span class="precio-desde">desde</span>
+          <!-- Reemplaza el precio cuando lo tengas definido -->
+          <span class="precio-valor">$XXXX</span>
+          <span class="precio-moneda">CLP</span>
+        </div>
+        <a href="#seccion-5" class="btn-producto">Solicitar diseño</a>
+      </div>
+
+      <!-- Imagen del producto -->
+      <div class="producto-imagen-wrap">
+        <div class="producto-imagen-marco">
+          <!-- 
+            IMAGEN POLERAS:
+            Reemplaza "URL_DE_TU_IMAGEN_AQUI" con el link real.
+          -->
+          <img
+            src="URL_DE_TU_IMAGEN_AQUI"
+            alt="Poleras con diseño AmFra"
+            class="producto-imagen"
+            onerror="this.parentElement.classList.add('sin-imagen')"
+          />
+          <div class="imagen-placeholder">
+            <span class="placeholder-icono">👕</span>
+            <span class="placeholder-texto">Imagen próximamente</span>
+          </div>
+        </div>
+        <span class="numero-deco">02</span>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- =============================================
+       SECCIÓN 4: TAZAS
+  ============================================= -->
+  <section class="seccion seccion-producto seccion-tazas" id="seccion-3">
+
+    <canvas class="canvas-particulas canvas-seccion" id="canvasTazas"></canvas>
+
+    <div class="producto-layout">
+
+      <div class="producto-imagen-wrap">
+        <div class="producto-imagen-marco">
+          <!-- 
+            IMAGEN TAZAS:
+            Reemplaza "URL_DE_TU_IMAGEN_AQUI" con el link real.
+          -->
+          <img
+            src="URL_DE_TU_IMAGEN_AQUI"
+            alt="Tazas personalizadas AmFra"
+            class="producto-imagen"
+            onerror="this.parentElement.classList.add('sin-imagen')"
+          />
+          <div class="imagen-placeholder">
+            <span class="placeholder-icono">☕</span>
+            <span class="placeholder-texto">Imagen próximamente</span>
+          </div>
+        </div>
+        <span class="numero-deco">03</span>
+      </div>
+
+      <div class="producto-info">
+        <span class="producto-categoria">Tazas</span>
+        <h2 class="producto-titulo">Tazas<br /><em>únicas</em></h2>
+        <p class="producto-descripcion">
+          Sublimadas con tu arte o logo. Ideales para regalar,
+          vender o usar en tu negocio. ¡Cada sorbo con tu marca!
+        </p>
+        <div class="producto-precio-wrap">
+          <span class="precio-desde">desde</span>
+          <!-- Reemplaza el precio cuando lo tengas definido -->
+          <span class="precio-valor">$XXXX</span>
+          <span class="precio-moneda">CLP</span>
+        </div>
+        <a href="#seccion-5" class="btn-producto">Solicitar diseño</a>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- =============================================
+       SECCIÓN 5: TARJETAS DE PRESENTACIÓN
+  ============================================= -->
+  <section class="seccion seccion-producto seccion-tarjetas" id="seccion-4">
+
+    <canvas class="canvas-particulas canvas-seccion" id="canvasTarjetas"></canvas>
+
+    <div class="producto-layout layout-invertido">
+
+      <div class="producto-info">
+        <span class="producto-categoria">Identidad</span>
+        <h2 class="producto-titulo">Tarjetas de<br /><em>presentación</em></h2>
+        <p class="producto-descripcion">
+          Tu primera impresión importa. Diseños profesionales
+          en papel premium que no pasan desapercibidos.
+        </p>
+        <div class="producto-precio-wrap">
+          <span class="precio-desde">desde</span>
+          <!-- Reemplaza el precio cuando lo tengas definido -->
+          <span class="precio-valor">$XXXX</span>
+          <span class="precio-moneda">CLP</span>
+        </div>
+        <a href="#seccion-5" class="btn-producto">Solicitar diseño</a>
+      </div>
+
+      <div class="producto-imagen-wrap">
+        <div class="producto-imagen-marco">
+          <!-- 
+            IMAGEN TARJETAS:
+            Reemplaza "URL_DE_TU_IMAGEN_AQUI" con el link real.
+          -->
+          <img
+            src="URL_DE_TU_IMAGEN_AQUI"
+            alt="Tarjetas de presentación AmFra"
+            class="producto-imagen"
+            onerror="this.parentElement.classList.add('sin-imagen')"
+          />
+          <div class="imagen-placeholder">
+            <span class="placeholder-icono">🪪</span>
+            <span class="placeholder-texto">Imagen próximamente</span>
+          </div>
+        </div>
+        <span class="numero-deco">04</span>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- =============================================
+       SECCIÓN 6: CONTACTO / WHATSAPP
+       Redirige al usuario a WhatsApp con mensaje predefinido.
+       Reemplaza el número de teléfono en el link de WhatsApp.
+  ============================================= -->
+  <section class="seccion seccion-contacto" id="seccion-5">
+
+    <canvas class="canvas-particulas canvas-seccion" id="canvasContacto"></canvas>
+
+    <!-- Fondo decorativo con forma geométrica -->
+    <div class="contacto-bg-deco"></div>
+
+    <div class="contacto-contenido">
+
+      <!-- Título principal del contacto -->
+      <div class="contacto-encabezado">
+        <div class="linea-deco"></div>
+        <h2 class="contacto-titulo">¿Listo para<br /><em>crear algo increíble?</em></h2>
+        <p class="contacto-subtitulo">
+          Cuéntanos tu idea y nosotros la hacemos realidad.<br />
+          Estamos para ayudarte.
+        </p>
+      </div>
+
+      <!-- Botón de WhatsApp -->
+      <div class="contacto-acciones">
+        <!--
+          ENLACE DE WHATSAPP:
+          Reemplaza "56912345678" con el número real de WhatsApp de AmFra.
+          Formato: código de país + número sin espacios ni guiones.
+          Chile = 56 + número sin el 0 inicial.
+          Ejemplo: 56912345678
+
+          El texto "Hola!..." es el mensaje que aparece pre-escrito al abrir WhatsApp.
+          Puedes cambiarlo por el texto que prefieras.
+        -->
+        <a
+          href="https://wa.me/56912345678?text=Hola%20AmFra!%20Me%20interesa%20hacer%20un%20diseño%20personalizado%20%F0%9F%8E%A8"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="btn-whatsapp"
+        >
+          <!-- Ícono de WhatsApp (SVG inline para no depender de externos) -->
+          <svg class="wsp-icono" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+          </svg>
+          Escribirnos por WhatsApp
+        </a>
+
+        <!-- Texto adicional debajo del botón -->
+        <p class="contacto-nota">También puedes escribirnos directamente al número y te respondemos a la brevedad.</p>
+      </div>
+
+      <!-- Pie de página con nombre de marca -->
+      <footer class="pie-pagina">
+        <p class="pie-marca">AmFra</p>
+        <p class="pie-eslogan">Tus diseños en buenas manos</p>
+      </footer>
+
+    </div>
+  </section>
+
+  <!-- =============================================
+       SCRIPTS
+       Se carga al final para no bloquear el renderizado
+  ============================================= -->
+  <script src="js/main.js"></script>
+
+</body>
+</html>
