@@ -203,7 +203,11 @@ button {
   width:100%;
   height:100%;
 
+  min-width:100%;
+  min-height:100%;
+
   object-fit:cover;
+
   transform:translateX(-50%);
 }
 
@@ -941,6 +945,30 @@ button {
 }
 
 @media (max-width: 768px) {
+.capa-video video{
+  position:absolute;
+  top:0;
+  left:50%;
+
+  width:100%;
+  height:100%;
+
+  min-width:100%;
+  min-height:100%;
+
+  object-fit:cover;
+
+  transform:translateX(-50%);
+}
+
+@media (max-width:768px){
+
+.capa-video video{
+  height:115%;
+  width:auto;
+}
+
+}
   /* Nav lateral pasa a barra inferior */
   .nav-lateral {
     right: auto;
