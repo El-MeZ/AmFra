@@ -152,12 +152,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Configuración de partículas por canvas ID
   const CFG_PARTICULAS = {
-    canvasPapeleria:   { color: 'rgba(0,200,83,',   n: 45, r: 1.6 },
-    canvasSublimacion: { color: 'rgba(255,149,0,',  n: 50, r: 1.4 },
-    canvasPoleras:     { color: 'rgba(255,60,172,', n: 40, r: 1.7 },
-    canvasOtros:       { color: 'rgba(0,122,255,',  n: 35, r: 1.5 },
-    canvas3d:          { color: 'rgba(175,82,222,', n: 38, r: 1.8 },
-    canvasContacto:    { color: 'rgba(37,211,102,', n: 55, r: 1.4 },
+    canvasPapeleria:   { color: 'rgba(0,200,83,',   n: 50, r: 1.6 },
+    canvasSublimacion: { color: 'rgba(255,149,0,',  n: 100, r: 1.4 },
+    canvasPoleras:     { color: 'rgba(255,60,172,', n: 100, r: 1.7 },
+    canvasOtros:       { color: 'rgba(0,122,255,',  n: 100, r: 1.5 },
+    canvas3d:          { color: 'rgba(175,82,222,', n: 100, r: 1.8 },
+    canvasContacto:    { color: 'rgba(37,211,102,', n: 300, r: 1.4 },
   };
 
   // Evitamos iniciar el mismo canvas más de una vez
