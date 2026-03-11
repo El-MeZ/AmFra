@@ -964,7 +964,10 @@ button {
   .categoria-header { flex-wrap: wrap; gap: 1rem; }
   .cat-numero { font-size: 3rem; }
 
-  .productos-grid { grid-template-columns: repeat(2, 1fr); gap: .75rem; }
+.productos-grid {  
+  grid-template-columns: repeat(2, 1fr);  
+  gap: .75rem;  
+}
 
   /* Hero */
   .hero-contenido { padding: 0 1rem; }
