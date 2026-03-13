@@ -250,14 +250,24 @@ document.addEventListener('DOMContentLoaded', () => {
   // Número de WhatsApp real de AmFra
   const WSP_NUM = '56949312725';
 
-  let productoActual = '';
-  let cantidad = 1;
+let productoActual = '';
+let cantidad = 1;
+let carrito = [];
 
   // Función que actualiza el link de WhatsApp con producto y cantidad
-  function actualizarLink() {
-    const msg = `Hola AmFra! 👋 Quiero pedir:\n\n• Producto: ${productoActual}\n• Cantidad: ${cantidad} unidad${cantidad > 1 ? 'es' : ''}\n\n¿Puedes cotizarme? 🎨`;
-    modalWsp.href = `https://wa.me/${WSP_NUM}?text=${encodeURIComponent(msg)}`;
-  }
+function actualizarLink() {
+
+  carrito.push({
+    producto: productoActual,
+    cantidad: cantidad
+  });
+
+  cerrarModal();
+
+  console.log("Producto agregado:", productoActual);
+  console.log("Carrito actual:", carrito);
+
+}
 
   // Abrir modal al hacer clic en "Pedir"
   document.querySelectorAll('.btn-pedir').forEach(btn => {
